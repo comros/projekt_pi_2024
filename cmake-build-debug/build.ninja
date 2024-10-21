@@ -47,11 +47,35 @@ cmake_ninja_workdir = E$:/Studia/projekt_pi_2024/cmake-build-debug/
 #############################################
 # Order-only phony target for main
 
-build cmake_object_order_depends_target_main: phony || cmake_object_order_depends_target_sfml-graphics cmake_object_order_depends_target_sfml-system cmake_object_order_depends_target_sfml-window
+build cmake_object_order_depends_target_main: phony || cmake_object_order_depends_target_sfml-audio cmake_object_order_depends_target_sfml-graphics cmake_object_order_depends_target_sfml-network cmake_object_order_depends_target_sfml-system cmake_object_order_depends_target_sfml-window
 
 build CMakeFiles/main.dir/src/main.cpp.obj: CXX_COMPILER__main_unscanned_Debug E$:/Studia/projekt_pi_2024/src/main.cpp || cmake_object_order_depends_target_main
   DEFINES = -DSFML_STATIC
   DEP_FILE = CMakeFiles\main.dir\src\main.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/include
+  OBJECT_DIR = CMakeFiles\main.dir
+  OBJECT_FILE_DIR = CMakeFiles\main.dir\src
+
+build CMakeFiles/main.dir/src/engine.cpp.obj: CXX_COMPILER__main_unscanned_Debug E$:/Studia/projekt_pi_2024/src/engine.cpp || cmake_object_order_depends_target_main
+  DEFINES = -DSFML_STATIC
+  DEP_FILE = CMakeFiles\main.dir\src\engine.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/include
+  OBJECT_DIR = CMakeFiles\main.dir
+  OBJECT_FILE_DIR = CMakeFiles\main.dir\src
+
+build CMakeFiles/main.dir/src/draw.cpp.obj: CXX_COMPILER__main_unscanned_Debug E$:/Studia/projekt_pi_2024/src/draw.cpp || cmake_object_order_depends_target_main
+  DEFINES = -DSFML_STATIC
+  DEP_FILE = CMakeFiles\main.dir\src\draw.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/include
+  OBJECT_DIR = CMakeFiles\main.dir
+  OBJECT_FILE_DIR = CMakeFiles\main.dir\src
+
+build CMakeFiles/main.dir/src/input.cpp.obj: CXX_COMPILER__main_unscanned_Debug E$:/Studia/projekt_pi_2024/src/input.cpp || cmake_object_order_depends_target_main
+  DEFINES = -DSFML_STATIC
+  DEP_FILE = CMakeFiles\main.dir\src\input.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/include
   OBJECT_DIR = CMakeFiles\main.dir
@@ -65,9 +89,9 @@ build CMakeFiles/main.dir/src/main.cpp.obj: CXX_COMPILER__main_unscanned_Debug E
 #############################################
 # Link the executable bin\main.exe
 
-build bin/main.exe: CXX_EXECUTABLE_LINKER__main_Debug CMakeFiles/main.dir/src/main.cpp.obj | _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a _deps/sfml-build/lib/libsfml-system-s-d.a _deps/sfml-src/extlibs/libs-mingw/x64/libfreetype.a || _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-system-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a
+build bin/main.exe: CXX_EXECUTABLE_LINKER__main_Debug CMakeFiles/main.dir/src/main.cpp.obj CMakeFiles/main.dir/src/engine.cpp.obj CMakeFiles/main.dir/src/draw.cpp.obj CMakeFiles/main.dir/src/input.cpp.obj | _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-audio-s-d.a _deps/sfml-build/lib/libsfml-network-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a _deps/sfml-src/extlibs/libs-mingw/x64/libfreetype.a _deps/sfml-src/extlibs/libs-mingw/x64/libopenal32.a _deps/sfml-src/extlibs/libs-mingw/x64/libvorbisenc.a _deps/sfml-src/extlibs/libs-mingw/x64/libvorbisfile.a _deps/sfml-src/extlibs/libs-mingw/x64/libvorbis.a _deps/sfml-src/extlibs/libs-mingw/x64/libogg.a _deps/sfml-src/extlibs/libs-mingw/x64/libFLAC.a _deps/sfml-build/lib/libsfml-system-s-d.a || _deps/sfml-build/lib/libsfml-audio-s-d.a _deps/sfml-build/lib/libsfml-graphics-s-d.a _deps/sfml-build/lib/libsfml-network-s-d.a _deps/sfml-build/lib/libsfml-system-s-d.a _deps/sfml-build/lib/libsfml-window-s-d.a
   FLAGS = -g
-  LINK_LIBRARIES = _deps/sfml-build/lib/libsfml-graphics-s-d.a  _deps/sfml-build/lib/libsfml-window-s-d.a  _deps/sfml-build/lib/libsfml-system-s-d.a  -lopengl32  -lwinmm  -lgdi32  _deps/sfml-src/extlibs/libs-mingw/x64/libfreetype.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  LINK_LIBRARIES = _deps/sfml-build/lib/libsfml-graphics-s-d.a  _deps/sfml-build/lib/libsfml-audio-s-d.a  _deps/sfml-build/lib/libsfml-network-s-d.a  _deps/sfml-build/lib/libsfml-window-s-d.a  -lopengl32  -lgdi32  _deps/sfml-src/extlibs/libs-mingw/x64/libfreetype.a  _deps/sfml-src/extlibs/libs-mingw/x64/libopenal32.a  _deps/sfml-src/extlibs/libs-mingw/x64/libvorbisenc.a  _deps/sfml-src/extlibs/libs-mingw/x64/libvorbisfile.a  _deps/sfml-src/extlibs/libs-mingw/x64/libvorbis.a  _deps/sfml-src/extlibs/libs-mingw/x64/libogg.a  _deps/sfml-src/extlibs/libs-mingw/x64/libFLAC.a  _deps/sfml-build/lib/libsfml-system-s-d.a  -lwinmm  -lws2_32  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\main.dir
   POST_BUILD = cd .
   PRE_LINK = C:\WINDOWS\system32\cmd.exe /C "cd /D E:\Studia\projekt_pi_2024\cmake-build-debug && C:\Users\Administrator\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -E copy E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/extlibs/bin/x64/openal32.dll E:/Studia/projekt_pi_2024/cmake-build-debug/bin && cd E:\Studia\projekt_pi_2024\cmake-build-debug"

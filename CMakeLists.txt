@@ -13,8 +13,13 @@ FetchContent_Declare(SFML
         SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp)
-target_link_libraries(main PRIVATE sfml-graphics)
+add_executable(main src/main.cpp
+        src/engine.cpp
+        headers/engine.hpp
+        src/draw.cpp
+        src/input.cpp
+)
+target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window)
 target_compile_features(main PRIVATE cxx_std_17)
 
 if(WIN32)
