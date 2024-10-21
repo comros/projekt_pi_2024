@@ -559,3 +559,151 @@ events:
       Running the CXX compiler's linker: "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/mingw/bin/ld.exe" "-v"
       GNU ld (GNU Binutils) 2.40
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake:250 (check_include_file)"
+      - "cmake-build-debug/_deps/sfml-src/cmake/Config.cmake:10 (check_type_size)"
+      - "cmake-build-debug/_deps/sfml-src/CMakeLists.txt:34 (include)"
+    checks:
+      - "Looking for sys/types.h"
+    directories:
+      source: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-9plhsl"
+      binary: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-9plhsl"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: "13.0"
+      CMAKE_USER_MAKE_RULES_OVERRIDE: "E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/cmake/CompilerOptionsOverride.cmake"
+    buildResult:
+      variable: "HAVE_SYS_TYPES_H"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-9plhsl'
+        
+        Run Build Command(s): C:/Users/Administrator/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -v cmTC_fb1f0
+        [1/2] C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe    -o CMakeFiles/cmTC_fb1f0.dir/CheckIncludeFile.c.obj -c E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-9plhsl/CheckIncludeFile.c
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe   CMakeFiles/cmTC_fb1f0.dir/CheckIncludeFile.c.obj -o cmTC_fb1f0.exe -Wl,--out-implib,libcmTC_fb1f0.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake:251 (check_include_file)"
+      - "cmake-build-debug/_deps/sfml-src/cmake/Config.cmake:10 (check_type_size)"
+      - "cmake-build-debug/_deps/sfml-src/CMakeLists.txt:34 (include)"
+    checks:
+      - "Looking for stdint.h"
+    directories:
+      source: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-5cwj4o"
+      binary: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-5cwj4o"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: "13.0"
+      CMAKE_USER_MAKE_RULES_OVERRIDE: "E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/cmake/CompilerOptionsOverride.cmake"
+    buildResult:
+      variable: "HAVE_STDINT_H"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-5cwj4o'
+        
+        Run Build Command(s): C:/Users/Administrator/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -v cmTC_b95c4
+        [1/2] C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe    -o CMakeFiles/cmTC_b95c4.dir/CheckIncludeFile.c.obj -c E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-5cwj4o/CheckIncludeFile.c
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe   CMakeFiles/cmTC_b95c4.dir/CheckIncludeFile.c.obj -o cmTC_b95c4.exe -Wl,--out-implib,libcmTC_b95c4.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake:252 (check_include_file)"
+      - "cmake-build-debug/_deps/sfml-src/cmake/Config.cmake:10 (check_type_size)"
+      - "cmake-build-debug/_deps/sfml-src/CMakeLists.txt:34 (include)"
+    checks:
+      - "Looking for stddef.h"
+    directories:
+      source: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-e6twtw"
+      binary: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-e6twtw"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: "13.0"
+      CMAKE_USER_MAKE_RULES_OVERRIDE: "E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/cmake/CompilerOptionsOverride.cmake"
+    buildResult:
+      variable: "HAVE_STDDEF_H"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-e6twtw'
+        
+        Run Build Command(s): C:/Users/Administrator/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -v cmTC_4d620
+        [1/2] C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe    -o CMakeFiles/cmTC_4d620.dir/CheckIncludeFile.c.obj -c E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-e6twtw/CheckIncludeFile.c
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe   CMakeFiles/cmTC_4d620.dir/CheckIncludeFile.c.obj -o cmTC_4d620.exe -Wl,--out-implib,libcmTC_4d620.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake:146 (try_compile)"
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckTypeSize.cmake:271 (__check_type_size_impl)"
+      - "cmake-build-debug/_deps/sfml-src/cmake/Config.cmake:10 (check_type_size)"
+      - "cmake-build-debug/_deps/sfml-src/CMakeLists.txt:34 (include)"
+    checks:
+      - "Check size of void*"
+    directories:
+      source: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-37lgnj"
+      binary: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-37lgnj"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: "13.0"
+      CMAKE_USER_MAKE_RULES_OVERRIDE: "E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/cmake/CompilerOptionsOverride.cmake"
+    buildResult:
+      variable: "HAVE_SIZEOF_VOID_PTR"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-37lgnj'
+        
+        Run Build Command(s): C:/Users/Administrator/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -v cmTC_1e12e
+        [1/2] C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe    -o CMakeFiles/cmTC_1e12e.dir/SIZEOF_VOID_PTR.c.obj -c E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-37lgnj/SIZEOF_VOID_PTR.c
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe   CMakeFiles/cmTC_1e12e.dir/SIZEOF_VOID_PTR.c.obj -o cmTC_1e12e.exe -Wl,--out-implib,libcmTC_1e12e.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Users/Administrator/AppData/Local/Programs/CLion/bin/cmake/win/x64/share/cmake-3.29/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "cmake-build-debug/_deps/sfml-src/src/SFML/Window/CMakeLists.txt:332 (check_include_file)"
+    checks:
+      - "Looking for dinput.h"
+    directories:
+      source: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-qmkvyv"
+      binary: "E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-qmkvyv"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/cmake/Modules/"
+      CMAKE_OSX_DEPLOYMENT_TARGET: "13.0"
+      CMAKE_USER_MAKE_RULES_OVERRIDE: "E:/Studia/projekt_pi_2024/cmake-build-debug/_deps/sfml-src/cmake/CompilerOptionsOverride.cmake"
+    buildResult:
+      variable: "DINPUT_H_FOUND"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-qmkvyv'
+        
+        Run Build Command(s): C:/Users/Administrator/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -v cmTC_3d890
+        [1/2] C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe    -o CMakeFiles/cmTC_3d890.dir/CheckIncludeFile.c.obj -c E:/Studia/projekt_pi_2024/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-qmkvyv/CheckIncludeFile.c
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\Users\\Administrator\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\gcc.exe   CMakeFiles/cmTC_3d890.dir/CheckIncludeFile.c.obj -o cmTC_3d890.exe -Wl,--out-implib,libcmTC_3d890.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        
+      exitCode: 0
+...
