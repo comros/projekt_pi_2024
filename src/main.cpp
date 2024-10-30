@@ -4,12 +4,14 @@
 #include <iostream>
 
 #define SPRITE_SCALE 6
+#define CHAR_ATLAS_PATH "../../assets/fantasy_txtpack/Player/Player.png"
 
-// Needed to adjust for the player's sprite white space
-#define SPRITE_PADDING_UP (5 * SPRITE_SCALE)
-#define SPRITE_PADDING_RIGHT ((32 - 10) * SPRITE_SCALE)
-#define SPRITE_PADDING_DOWN ((32 - 7) * SPRITE_SCALE)
-#define SPRITE_PADDING_LEFT (9 * SPRITE_SCALE)
+// Needed to adjust for the player's sprite white space, remember sprite's origin is in the middle
+#define SPRITE_SIZE 32
+#define SPRITE_PADDING_UP (-11 * SPRITE_SCALE)
+#define SPRITE_PADDING_RIGHT (6 * SPRITE_SCALE)
+#define SPRITE_PADDING_DOWN (9 * SPRITE_SCALE)
+#define SPRITE_PADDING_LEFT (-6 * SPRITE_SCALE)
 
 int main() {
 
@@ -22,23 +24,27 @@ int main() {
     // Limiting to only a certain part of the atlas and adjusting for the left empty space
     // Sprites in the player atlas are 13 x 20
     // They are 19 pixels (+player size) apart on x and 12 pixels (+player size) apart on y
-    sf::IntRect textureRect(0,0,32,32);
-    texture.loadFromFile("../../assets/fantasy_txtpack/Player/Player.png", textureRect);
+    sf::IntRect textureRect(0,0,SPRITE_SIZE,SPRITE_SIZE);
     sf::Sprite sprite;
-    sprite.setTexture(texture);
 
-    // Setting sprite's values
+    // Setting sprite's starting position
     auto spritePosition = sf::Vector2f(850,450); // auto -> sf::Vector2f
     sprite.setPosition(spritePosition);
-    sprite.scale(sf::Vector2f(SPRITE_SCALE,SPRITE_SCALE));
 
     // Variables
-    float speed = 12;
+    float speed = 8;
     auto velocity = sf::Vector2f(0,0);
     auto dir = sf::Vector2f(0, 0);
+    int flip = 1;
 
+    // Game loop
     while (window.isOpen()) {
         sf::Event event{};
+
+        texture.loadFromFile(CHAR_ATLAS_PATH, textureRect);
+        sprite.setTexture(texture);
+        sprite.setScale(sf::Vector2f(SPRITE_SCALE * flip,SPRITE_SCALE));
+        sprite.setOrigin(SPRITE_SIZE/2, SPRITE_SIZE/2); // NOTE: SPRITE_SIZE SHOULD BE DIVISIBLE BY 2
 
         /// INPUT
 
@@ -50,15 +56,25 @@ int main() {
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
                 dir.y = -1;
+                textureRect.left = 0;
+                textureRect.top = 64;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
                 dir.y = 1;
+                textureRect.left = 0;
+                textureRect.top = 0;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
                 dir.x = -1;
+                textureRect.left = 0;
+                textureRect.top = 32;
+                flip = -1;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
                 dir.x = 1;
+                textureRect.left = 0;
+                textureRect.top = 32;
+                flip = 1;
             }
         }
 
