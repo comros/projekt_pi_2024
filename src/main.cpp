@@ -4,19 +4,26 @@
 #include <iostream>
 
 #define SPRITE_SCALE 6
-#define CHAR_ATLAS_PATH "../../assets/fantasy_txtpack/Player/Player.png"
 
 // Needed to adjust for the player's sprite white space, remember sprite's origin is in the middle
 #define SPRITE_SIZE 32
-#define SPRITE_PADDING_UP (-11 * SPRITE_SCALE)
+#define SPRITE_PADDING_UP (11 * SPRITE_SCALE)
 #define SPRITE_PADDING_RIGHT (6 * SPRITE_SCALE)
 #define SPRITE_PADDING_DOWN (9 * SPRITE_SCALE)
-#define SPRITE_PADDING_LEFT (-6 * SPRITE_SCALE)
+#define SPRITE_PADDING_LEFT (6 * SPRITE_SCALE)
+
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
+
+#define CHAR_ATLAS_PATH "../../assets/fantasy_txtpack/Player/Player.png"
 
 int main() {
 
+    // Needed for deltaTime
+    sf::Clock clock;
+
     // Creating a window and capping fps
-    sf::RenderWindow window(sf::VideoMode(1920,1080), "Projekt pi 2024");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT), "Projekt pi 2024");
     window.setFramerateLimit(60);
 
     // Project build is in ./cmake-build-debug/bin, so in order to access the assets folder "../../" is needed
@@ -32,7 +39,7 @@ int main() {
     sprite.setPosition(spritePosition);
 
     // Variables
-    float speed = 8;
+    float speed = 500.0f;
     auto velocity = sf::Vector2f(0,0);
     auto dir = sf::Vector2f(0, 0);
     int flip = 1;
@@ -78,6 +85,9 @@ int main() {
             }
         }
 
+        // Calculating deltaTime once per frame
+        float deltaTime = clock.restart().asSeconds();
+
         /// PHYSICS
 
         // Normalizing the direction vector
@@ -90,15 +100,36 @@ int main() {
         velocity.x = speed * dir.x;
         velocity.y = speed * dir.y;
 
+
         // Creating a bounding box so that the sprite won't go outside the screen and instead makes it bounce back
         // Padding is needed due to SFML2 using the (0,0) of the shape as a reference point
         // Adjusting the bounding box size by subtracting the shape's size makes it so the box won't leave the screen
-        if (spritePosition.x < 0 - SPRITE_PADDING_LEFT || spritePosition.x > 1920 - SPRITE_PADDING_RIGHT) spritePosition.x = 850;
-        if (spritePosition.y < 0 - SPRITE_PADDING_UP|| spritePosition.y > 1080 - SPRITE_PADDING_DOWN) spritePosition.y = 450;
+
+        // Check left boundary
+        if (spritePosition.x < SPRITE_PADDING_LEFT) {
+            spritePosition.x = SPRITE_PADDING_LEFT;
+        }
+        // Check right boundary
+        if (spritePosition.x > WINDOW_WIDTH - SPRITE_PADDING_RIGHT) {
+            spritePosition.x = WINDOW_WIDTH - SPRITE_PADDING_RIGHT;
+        }
+
+        // Check top boundary
+        if (spritePosition.y < SPRITE_PADDING_UP) {
+            spritePosition.y = SPRITE_PADDING_UP;
+        }
+        // Check bottom boundary
+        if (spritePosition.y > WINDOW_HEIGHT - SPRITE_PADDING_DOWN) {
+            spritePosition.y = WINDOW_HEIGHT - SPRITE_PADDING_DOWN;
+        }
+
+
+        std::cout << "Position X: " << spritePosition.x << ", Position Y: " << spritePosition.y << std::endl;
+
 
         // Setting the velocity and updating the position
-        spritePosition.x += velocity.x;
-        spritePosition.y += velocity.y;
+        spritePosition.x += velocity.x * deltaTime;
+        spritePosition.y += velocity.y * deltaTime;
         sprite.setPosition(spritePosition);
 
         /// RENDERING

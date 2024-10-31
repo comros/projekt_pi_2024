@@ -1,4 +1,4 @@
 C:\Users\Administrator\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/Administrator/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -G Ninja -S E:\Studia\projekt_pi_2024 -B E:\Studia\projekt_pi_2024\cmake-build-debug
 -- Configuring done (1.6s)
--- Generating done (0.2s)
+-- Generating done (0.0s)
 -- Build files have been written to: E:/Studia/projekt_pi_2024/cmake-build-debug
