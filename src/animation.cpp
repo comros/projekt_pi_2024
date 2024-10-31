@@ -1,4 +1,4 @@
-#include "../headers/Animation.h"
+#include "../headers/animation.hpp"
 
 // Loading texture and starting to loop through frames
 Animation::Animation(int x, int y, int width, int height, const std::string& texture_path)

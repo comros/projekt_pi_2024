@@ -14,8 +14,13 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(main src/main.cpp
-        src/Animation.cpp
-        headers/Animation.h
+        src/animation.cpp
+        headers/animation.hpp
+        src/game.cpp
+        headers/game.hpp
+        src/player.cpp
+        headers/player.hpp
+        headers/definitions.hpp
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window)
 target_compile_features(main PRIVATE cxx_std_17)

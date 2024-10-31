@@ -2,6 +2,7 @@
 #define ANIMATION_H
 
 #include <SFML/Graphics.hpp>
+#include "../headers/definitions.hpp"
 
 class Animation {
 public:
