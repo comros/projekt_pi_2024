@@ -123,7 +123,7 @@ int main() {
             spritePosition.y = WINDOW_HEIGHT - SPRITE_PADDING_DOWN;
         }
 
-
+        /// DEBUG
         std::cout << "Position X: " << spritePosition.x << ", Position Y: " << spritePosition.y << std::endl;
 
 
