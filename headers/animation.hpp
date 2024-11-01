@@ -11,8 +11,8 @@ public:
     void ApplyToSprite(sf::Sprite&) const;
     void Update(float deltaTime);
 private:
-    static constexpr int numberOfFrames = 6;
-    static constexpr float frameDisplayTime = 0.2f;
+    static constexpr int numberOfFrames = 8;
+    static constexpr float frameDisplayTime = 0.1f;
     sf::Texture texture;
     sf::IntRect frames[numberOfFrames];
     int iFrame = 0;

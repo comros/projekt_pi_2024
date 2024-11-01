@@ -2,68 +2,65 @@
 #include <cmath>
 
 // Setting sprite's starting values
-Player::Player() : position(850, 450), speed(350.0f), flip(1), currentAnimation(AnimationIndex::IdleDown) {
+Player::Player() : position(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), speed(350.0f), currentAnimation(AnimationIndex::IdleDown) {
     sprite.setPosition(position);
-    sprite.setOrigin(SPRITE_SIZE / 2, SPRITE_SIZE / 2);
+    sprite.setScale(SPRITE_SCALE, SPRITE_SCALE);
+    sprite.setOrigin(SPRITE_SIZE_X / 2, SPRITE_SIZE_Y / 2);
 
     // Initialize animations
-    animations[int(AnimationIndex::IdleUp)] = Animation(0, SPRITE_SIZE * 2, SPRITE_SIZE, SPRITE_SIZE, CHAR_ATLAS_PATH);
-    animations[int(AnimationIndex::IdleDown)] = Animation(0, 0, SPRITE_SIZE, SPRITE_SIZE, CHAR_ATLAS_PATH);
-    animations[int(AnimationIndex::IdleSide)] = Animation(0, SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE, CHAR_ATLAS_PATH);
-    animations[int(AnimationIndex::WalkingUp)] = Animation(0, SPRITE_SIZE * 5, SPRITE_SIZE, SPRITE_SIZE, CHAR_ATLAS_PATH);
-    animations[int(AnimationIndex::WalkingDown)] = Animation(0, SPRITE_SIZE * 3, SPRITE_SIZE, SPRITE_SIZE, CHAR_ATLAS_PATH);
-    animations[int(AnimationIndex::WalkingSide)] = Animation(0, SPRITE_SIZE * 4, SPRITE_SIZE, SPRITE_SIZE, CHAR_ATLAS_PATH);
+    animations[int(AnimationIndex::IdleDown)] = Animation(0, 0, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
+    animations[int(AnimationIndex::IdleLeftDown)] = Animation(0, SPRITE_SIZE_Y, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
+    animations[int(AnimationIndex::IdleLeftUp)] = Animation(0, SPRITE_SIZE_Y*2, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
+    animations[int(AnimationIndex::IdleUp)] = Animation(0, SPRITE_SIZE_Y*3, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
+    animations[int(AnimationIndex::IdleRightUp)] = Animation(0, SPRITE_SIZE_Y*4, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
+    animations[int(AnimationIndex::IdleRightDown)] = Animation(0, SPRITE_SIZE_Y*5, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
+
+    animations[int(AnimationIndex::WalkDown)] = Animation(0, 0, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
+    animations[int(AnimationIndex::WalkLeftDown)] = Animation(0, SPRITE_SIZE_Y, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
+    animations[int(AnimationIndex::WalkLeftUp)] = Animation(0, SPRITE_SIZE_Y*2, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
+    animations[int(AnimationIndex::WalkUp)] = Animation(0, SPRITE_SIZE_Y*3, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
+    animations[int(AnimationIndex::WalkRightUp)] = Animation(0, SPRITE_SIZE_Y*4, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
+    animations[int(AnimationIndex::WalkRightDown)] = Animation(0, SPRITE_SIZE_Y*5, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
 }
 
 void Player::handleInput() {
 
-    if (direction.y == -1) currentAnimation = AnimationIndex::IdleUp;
-    else if (direction.y == 1) currentAnimation = AnimationIndex::IdleDown;
-    else if (std::abs(direction.x) > 0.7f) currentAnimation = AnimationIndex::IdleSide; // 0.7f because we normalize dir vector
+    // Starting idle animation based on the previous direction
+    if (currentAnimation == AnimationIndex::WalkDown) currentAnimation = AnimationIndex::IdleDown;
+    if (currentAnimation == AnimationIndex::WalkLeftDown) currentAnimation = AnimationIndex::IdleLeftDown;
+    if (currentAnimation == AnimationIndex::WalkLeftUp) currentAnimation = AnimationIndex::IdleLeftUp;
+    if (currentAnimation == AnimationIndex::WalkUp) currentAnimation = AnimationIndex::IdleUp;
+    if (currentAnimation == AnimationIndex::WalkRightUp) currentAnimation = AnimationIndex::IdleRightUp;
+    if (currentAnimation == AnimationIndex::WalkRightDown) currentAnimation = AnimationIndex::IdleRightDown;
 
     direction = {0, 0};
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        if (direction.y != 1)
-        {
-            direction.y = -1;
-            currentAnimation = AnimationIndex::WalkingUp;
-        }
-        else
-        {
-            direction.y = 0;
-            currentAnimation = AnimationIndex::IdleUp;
-        }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        direction.y != -1 ? direction.y = 1 : direction.y = 0;
 
-        flip = 1;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        if(direction.y != -1)
-        {
-            direction.y = 1;
-            currentAnimation = AnimationIndex::WalkingDown;
-        }
-        else
-        {
-            currentAnimation = AnimationIndex::IdleDown;
-            direction.y = 0;
-        }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        direction.y != 1 ? direction.y = -1 : direction.y = 0;
 
-        flip = 1;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
         direction.x = -1;
-        currentAnimation = AnimationIndex::WalkingSide;
-        flip = -1;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         direction.x = 1;
-        currentAnimation = AnimationIndex::WalkingSide;
-        flip = 1;
-    }
+
+
+    // Setting walking animation based on x(-1,0,1) y(-1,0,1) movement
+    if (direction.x == 0 && direction.y == -1) currentAnimation = AnimationIndex::WalkDown;
+    if (direction.x == -1 && direction.y == -1) currentAnimation = AnimationIndex::WalkLeftDown;
+    if (direction.x == -1 && direction.y == 0) currentAnimation = AnimationIndex::WalkLeftDown;
+    if (direction.x == -1 && direction.y == 1) currentAnimation = AnimationIndex::WalkLeftUp;
+    if (direction.x == 0 && direction.y == 1) currentAnimation = AnimationIndex::WalkUp;
+    if (direction.x == 1 && direction.y == 1) currentAnimation = AnimationIndex::WalkRightUp;
+    if (direction.x == 1 && direction.y == 0) currentAnimation = AnimationIndex::WalkRightDown;
+    if (direction.x == 1 && direction.y == -1) currentAnimation = AnimationIndex::WalkRightDown;
 }
 
 void Player::update(float deltaTime) {
+
     // Normalizing the direction vector, so the player doesn't move faster going diagonally
     float vectorLength = std::sqrt(direction.x * direction.x + direction.y * direction.y);
     if (vectorLength != 0) {
@@ -73,14 +70,13 @@ void Player::update(float deltaTime) {
 
     // Setting the velocity and position accordingly
     velocity.x = speed * direction.x;
-    velocity.y = speed * direction.y;
+    velocity.y = speed * -direction.y; // Because SFML's graphic library positive y-axis points downwards
     position.x += velocity.x * deltaTime;
     position.y += velocity.y * deltaTime;
 
     checkBounds();
 
-    // Making sprite bigger and taking into account if the player is going left
-    sprite.setScale(SPRITE_SCALE * flip, SPRITE_SCALE);
+    // Updating animation
     animations[int(currentAnimation)].Update(deltaTime);
     animations[int(currentAnimation)].ApplyToSprite(sprite);
 

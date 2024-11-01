@@ -7,12 +7,18 @@
 
 // Declaring animation set for player
 enum class AnimationIndex {
-    IdleUp,
     IdleDown,
-    IdleSide,
-    WalkingUp,
-    WalkingDown,
-    WalkingSide,
+    IdleLeftDown,
+    IdleLeftUp,
+    IdleUp,
+    IdleRightUp,
+    IdleRightDown,
+    WalkDown,
+    WalkLeftDown,
+    WalkLeftUp,
+    WalkUp,
+    WalkRightUp,
+    WalkRightDown,
     Count
 };
 
@@ -31,7 +37,6 @@ private:
     sf::Vector2f direction;
     sf::Vector2f velocity;
     float speed;
-    int flip; // NOTE: This is necessary, because the atlas doesn't contain left-oriented sprites
     Animation animations[int(AnimationIndex::Count)]; // Making an array of animations (default constructor is needed)
     AnimationIndex currentAnimation;
 };
