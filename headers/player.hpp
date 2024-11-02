@@ -6,7 +6,7 @@
 #include "../headers/definitions.hpp"
 
 // Declaring animation set for player
-enum class AnimationIndex {
+enum class AnimationType {
     IdleDown,
     IdleLeftDown,
     IdleLeftUp,
@@ -27,18 +27,22 @@ public:
     Player();
     void handleInput();
     void update(float deltaTime);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window, float zoomFactor);
+    void setDirection(const sf::Vector2f& newDirection);
 
 private:
     void checkBounds();
+    void animate(float deltaTime);
 
     sf::Sprite sprite;
     sf::Vector2f position;
     sf::Vector2f direction;
     sf::Vector2f velocity;
+    sf::View view;
     float speed;
-    Animation animations[int(AnimationIndex::Count)]; // Making an array of animations (default constructor is needed)
-    AnimationIndex currentAnimation;
+    bool isCameraLocked = true;
+    Animation animations[int(AnimationType::Count)]; // Making an array of animations (default constructor is needed)
+    AnimationType currentAnimation;
 };
 
 

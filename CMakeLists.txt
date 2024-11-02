@@ -21,6 +21,9 @@ add_executable(main src/main.cpp
         src/player.cpp
         headers/player.hpp
         headers/definitions.hpp
+        src/inputhandler.cpp
+        headers/inputhandler.hpp
+        headers/inputhandler.hpp
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window)
 target_compile_features(main PRIVATE cxx_std_17)
