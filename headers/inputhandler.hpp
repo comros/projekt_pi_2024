@@ -9,21 +9,13 @@ public:
     InputHandler();
 
     // Call this in Game::processEvents to handle events
-    void handleEvent(const sf::Event& event, sf::RenderWindow& window);
+    void handleEvent(const sf::Event& event, sf::RenderWindow& window, Player &player);
 
     // Call this in Game::update to set player movement direction based on keyboard input
-    sf::Vector2f getPlayerDirection() const;
-
-    // For camera zoom control
-    float getZoomFactor() const;
-
-    // Check if the camera is locked/unlocked
-    bool isCameraLocked() const;
+    static sf::Vector2f getPlayerDirection();
 
 private:
-    sf::Vector2f playerDirection = {0,0};
-    float zoomFactor = 0.225f;
-    bool cameraLocked = true;
+
 };
 
 #endif

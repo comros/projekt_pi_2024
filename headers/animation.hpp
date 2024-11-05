@@ -2,7 +2,6 @@
 #define ANIMATION_H
 
 #include <SFML/Graphics.hpp>
-#include "../headers/definitions.hpp"
 
 class Animation {
 public:
@@ -11,12 +10,12 @@ public:
     void ApplyToSprite(sf::Sprite&) const;
     void Update(float deltaTime);
 private:
-    static constexpr int numberOfFrames = 8;
-    static constexpr float frameDisplayTime = 0.1f;
-    sf::Texture texture;
-    sf::IntRect frames[numberOfFrames];
-    int iFrame = 0;
-    float time = 0.0f;
+    static constexpr int mNumberOfFrames = 8;
+    static constexpr float mFrameDisplayTime = 0.1f;
+    sf::Texture mTexture;
+    sf::IntRect mFrames[mNumberOfFrames];
+    int mIFrame = 0;
+    float mTime = 0.0f;
 
     void ChangeFrame();
 };

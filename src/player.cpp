@@ -1,108 +1,109 @@
 #include "../headers/player.hpp"
 #include <cmath>
 
+#include "../headers/InputHandler.hpp"
+
 // Setting sprite's starting values
-Player::Player() : position(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), speed(100.0f), currentAnimation(AnimationType::IdleDown) {
-    sprite.setPosition(position);
-    sprite.setOrigin(SPRITE_SIZE_X / 2, SPRITE_SIZE_Y / 2);
+Player::Player()
+{
+    mSprite.setPosition(mPosition);
+    mSprite.setOrigin(PLAYER_WIDTH / 2, PLAYER_HEIGHT / 2);
 
     // Initialize animations
-    animations[int(AnimationType::IdleDown)] = Animation(0, 0, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
-    animations[int(AnimationType::IdleLeftDown)] = Animation(0, SPRITE_SIZE_Y, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
-    animations[int(AnimationType::IdleLeftUp)] = Animation(0, SPRITE_SIZE_Y*2, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
-    animations[int(AnimationType::IdleUp)] = Animation(0, SPRITE_SIZE_Y*3, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
-    animations[int(AnimationType::IdleRightUp)] = Animation(0, SPRITE_SIZE_Y*4, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
-    animations[int(AnimationType::IdleRightDown)] = Animation(0, SPRITE_SIZE_Y*5, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_IDLE_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::IdleDown)] = Animation(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_IDLE_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::IdleLeftDown)] = Animation(0, PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_IDLE_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::IdleLeftUp)] = Animation(0, PLAYER_HEIGHT*2, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_IDLE_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::IdleUp)] = Animation(0, PLAYER_HEIGHT*3, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_IDLE_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::IdleRightUp)] = Animation(0, PLAYER_HEIGHT*4, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_IDLE_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::IdleRightDown)] = Animation(0, PLAYER_HEIGHT*5, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_IDLE_ATLAS);
 
-    animations[int(AnimationType::WalkDown)] = Animation(0, 0, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
-    animations[int(AnimationType::WalkLeftDown)] = Animation(0, SPRITE_SIZE_Y, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
-    animations[int(AnimationType::WalkLeftUp)] = Animation(0, SPRITE_SIZE_Y*2, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
-    animations[int(AnimationType::WalkUp)] = Animation(0, SPRITE_SIZE_Y*3, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
-    animations[int(AnimationType::WalkRightUp)] = Animation(0, SPRITE_SIZE_Y*4, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
-    animations[int(AnimationType::WalkRightDown)] = Animation(0, SPRITE_SIZE_Y*5, SPRITE_SIZE_X, SPRITE_SIZE_Y, P_WALK_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::WalkDown)] = Animation(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::WalkLeftDown)] = Animation(0, PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::WalkLeftUp)] = Animation(0, PLAYER_HEIGHT*2, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::WalkUp)] = Animation(0, PLAYER_HEIGHT*3, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::WalkRightUp)] = Animation(0, PLAYER_HEIGHT*4, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
+    mAnimations[static_cast<int>(PlayerAnimation::WalkRightDown)] = Animation(0, PLAYER_HEIGHT*5, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
 }
 
-void Player::setDirection(const sf::Vector2f& newDirection) {
-    direction = newDirection;
+void Player::setDirection(const sf::Vector2f& newDirection)
+{
+    mDirection = newDirection;
 }
 
 void Player::animate(float deltaTime)
 {
+
     // Starting idle animation based on the previous direction
-    if (currentAnimation == AnimationType::WalkDown) currentAnimation = AnimationType::IdleDown;
-    if (currentAnimation == AnimationType::WalkLeftDown) currentAnimation = AnimationType::IdleLeftDown;
-    if (currentAnimation == AnimationType::WalkLeftUp) currentAnimation = AnimationType::IdleLeftUp;
-    if (currentAnimation == AnimationType::WalkUp) currentAnimation = AnimationType::IdleUp;
-    if (currentAnimation == AnimationType::WalkRightUp) currentAnimation = AnimationType::IdleRightUp;
-    if (currentAnimation == AnimationType::WalkRightDown) currentAnimation = AnimationType::IdleRightDown;
+    if (mCurrentAnimation == PlayerAnimation::WalkDown) mCurrentAnimation = PlayerAnimation::IdleDown;
+    if (mCurrentAnimation == PlayerAnimation::WalkLeftDown) mCurrentAnimation = PlayerAnimation::IdleLeftDown;
+    if (mCurrentAnimation == PlayerAnimation::WalkLeftUp) mCurrentAnimation = PlayerAnimation::IdleLeftUp;
+    if (mCurrentAnimation == PlayerAnimation::WalkUp) mCurrentAnimation = PlayerAnimation::IdleUp;
+    if (mCurrentAnimation == PlayerAnimation::WalkRightUp) mCurrentAnimation = PlayerAnimation::IdleRightUp;
+    if (mCurrentAnimation == PlayerAnimation::WalkRightDown) mCurrentAnimation = PlayerAnimation::IdleRightDown;
 
     // Setting walking animation based on x(-1,0,1) y(-1,0,1) movement
-    if (direction.x == 0 && direction.y == -1) currentAnimation = AnimationType::WalkDown;
-    if (direction.x == -1 && direction.y == -1) currentAnimation = AnimationType::WalkLeftDown;
-    if (direction.x == -1 && direction.y == 0) currentAnimation = AnimationType::WalkLeftDown;
-    if (direction.x == -1 && direction.y == 1) currentAnimation = AnimationType::WalkLeftUp;
-    if (direction.x == 0 && direction.y == 1) currentAnimation = AnimationType::WalkUp;
-    if (direction.x == 1 && direction.y == 1) currentAnimation = AnimationType::WalkRightUp;
-    if (direction.x == 1 && direction.y == 0) currentAnimation = AnimationType::WalkRightDown;
-    if (direction.x == 1 && direction.y == -1) currentAnimation = AnimationType::WalkRightDown;
+    if (mDirection.x == 0 && mDirection.y == -1) mCurrentAnimation = PlayerAnimation::WalkDown;
+    if (mDirection.x == -1 && mDirection.y == -1) mCurrentAnimation = PlayerAnimation::WalkLeftDown;
+    if (mDirection.x == -1 && mDirection.y == 0) mCurrentAnimation = PlayerAnimation::WalkLeftDown;
+    if (mDirection.x == -1 && mDirection.y == 1) mCurrentAnimation = PlayerAnimation::WalkLeftUp;
+    if (mDirection.x == 0 && mDirection.y == 1) mCurrentAnimation = PlayerAnimation::WalkUp;
+    if (mDirection.x == 1 && mDirection.y == 1) mCurrentAnimation = PlayerAnimation::WalkRightUp;
+    if (mDirection.x == 1 && mDirection.y == 0) mCurrentAnimation = PlayerAnimation::WalkRightDown;
+    if (mDirection.x == 1 && mDirection.y == -1) mCurrentAnimation = PlayerAnimation::WalkRightDown;
 
     // Updating animation
-    animations[int(currentAnimation)].Update(deltaTime);
-    animations[int(currentAnimation)].ApplyToSprite(sprite);
+    mAnimations[static_cast<int>(mCurrentAnimation)].Update(deltaTime);
+    mAnimations[static_cast<int>(mCurrentAnimation)].ApplyToSprite(mSprite);
 }
 
-void Player::update(float deltaTime) {
+void Player::updatePosition(const float deltaTime)
+{
 
     // Only normalize for velocity, do not alter `direction` directly for animation
-    sf::Vector2f normalizedDirection = direction;
-    float vectorLength = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-    if (vectorLength != 0) {
+    sf::Vector2f normalizedDirection = mDirection;
+    float vectorLength = std::sqrt(mDirection.x * mDirection.x + mDirection.y * mDirection.y);
+    if (vectorLength != 0)
+    {
         normalizedDirection.x /= vectorLength;
         normalizedDirection.y /= vectorLength;
     }
 
     // Setting the velocity and position accordingly
-    velocity.x = speed * normalizedDirection.x;
-    velocity.y = speed * -normalizedDirection.y; // Because SFML's graphic library positive y-axis points downwards
-    position.x += velocity.x * deltaTime;
-    position.y += velocity.y * deltaTime;
+    mVelocity.x = mSpeed * normalizedDirection.x;
+    mVelocity.y = mSpeed * -normalizedDirection.y; // Because SFML's graphic library positive y-axis points downwards
+    mPosition.x += mVelocity.x * deltaTime;
+    mPosition.y += mVelocity.y * deltaTime;
 
     checkBounds();
 
     animate(deltaTime);
 
     // Updating position
-    sprite.setPosition(position);
+    mSprite.setPosition(mPosition);
 }
 
 // Creating a bounding box so that the sprite won't go outside the screen and instead makes it bounce back
 // Padding is needed due to SFML2 using the (0,0) of the shape as a reference point
 // Adjusting the bounding box size by subtracting the shape's size makes it so the box won't leave the screen
-void Player::checkBounds() {
-    if (position.x < SPRITE_PADDING_LEFT) position.x = SPRITE_PADDING_LEFT;
-    if (position.x > WINDOW_WIDTH - SPRITE_PADDING_RIGHT) position.x = WINDOW_WIDTH - SPRITE_PADDING_RIGHT;
-    if (position.y < SPRITE_PADDING_UP) position.y = SPRITE_PADDING_UP;
-    if (position.y > WINDOW_HEIGHT - SPRITE_PADDING_DOWN) position.y = WINDOW_HEIGHT - SPRITE_PADDING_DOWN;
+void Player::checkBounds()
+{
+    if (mPosition.x < PLAYER_PADDING_LEFT) mPosition.x = PLAYER_PADDING_LEFT;
+    if (mPosition.x > WINDOW_WIDTH - PLAYER_PADDING_RIGHT) mPosition.x = WINDOW_WIDTH - PLAYER_PADDING_RIGHT;
+    if (mPosition.y < PLAYER_PADDING_UP) mPosition.y = PLAYER_PADDING_UP;
+    if (mPosition.y > WINDOW_HEIGHT - PLAYER_PADDING_DOWN) mPosition.y = WINDOW_HEIGHT - PLAYER_PADDING_DOWN;
 }
 
-float keepPositionX = 0, keepPositionY = 0;
-void Player::draw(sf::RenderWindow& window, float zoomFactor) {
+void Player::updateCamera(sf::RenderWindow& window)
+{
+    mView = window.getDefaultView();
 
-    // Camera work
-    view = window.getDefaultView();
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3) && isCameraLocked != false)
+    if (mIsCameraLocked)
     {
-        isCameraLocked = false;
-        keepPositionX = position.x;
-        keepPositionY = position.y;
+        fixedCameraPosition = mPosition;
+        mView.setCenter(mPosition);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::F4) && isCameraLocked != true) isCameraLocked = true;
+    else mView.setCenter(fixedCameraPosition); // Leave's camera in place where player pressed unlock button
 
-    if (isCameraLocked) view.setCenter(position.x, position.y);
-    else view.setCenter(keepPositionX, keepPositionY);
-
-    view.zoom(zoomFactor);
-    window.setView(view);
-    window.draw(sprite);
+    mView.zoom(mZoomFactor);
+    window.setView(mView);
 }

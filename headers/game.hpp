@@ -9,6 +9,7 @@
 class Game {
 public:
     Game();
+    ~Game();
     void run();
 
 private:
@@ -16,18 +17,21 @@ private:
     void update(float deltaTime);
     void generateMap();
     void render();
+    void imgui(sf::Clock deltaClock, Player& player); // ImGui
 
-    sf::RenderWindow window;
-    sf::Clock clock; // Needed for deltaTime
+    sf::RenderWindow mWindow = { sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Projekt pi 2024", sf::Style::Default};
+    sf::Clock mClock;              // Needed for deltaTime
 
-    InputHandler inputHandler;  // InputHandler instance
-    Player player;
-
-    float zoomFactor = 0.225f;
+    // Instances
+    InputHandler mInputHandler;
+    Player mPlayer;
 
     // Map generation
 
-    int tiles[12][40] = {
+    sf::Texture mTTerrain;         // Terrain texture
+    sf::VertexArray mMapVertices;  // Vertex array for the map
+
+    int mTiles[12][40] = {
         {0,0,0,5,9,9,9,9,9,9,7,0,0,0,0,0,0,0,0,0,0,0,0,5,9,9,9,9,9,9,0,0,0,5,9,9,9,9,9,9},
         {9,9,9,6,1,1,1,1,1,1,8,9,9,7,0,0,0,0,0,0,9,9,9,6,1,1,1,1,1,1,9,9,9,6,1,1,1,1,1,1},
         {1,1,1,1,1,1,1,1,1,1,1,1,1,8,9,9,9,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},

@@ -1,17 +1,46 @@
+include(FetchContent)
+
+# CMAKE SETUP
 cmake_minimum_required(VERSION 3.28)
 project(projekt_pi_2024 LANGUAGES CXX)
 
+set(CMAKE_EXE_LINKER_FLAGS "-static")
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-include(FetchContent)
+# SFML import
 FetchContent_Declare(SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
         GIT_TAG 2.6.x
         GIT_SHALLOW ON
         EXCLUDE_FROM_ALL
-        SYSTEM)
+        SYSTEM
+)
+
+# ImGui import
+FetchContent_Declare(imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui
+)
+
+# ImGui-SFML import
+FetchContent_Declare(imgui-sfml
+        GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
+        GIT_TAG        2.6.x
+)
+
+
+# Building libraries
+
 FetchContent_MakeAvailable(SFML)
+FetchContent_MakeAvailable(imgui)
+
+
+# ImGui-SFML setup
+set(IMGUI_DIR ${imgui_SOURCE_DIR})
+option(IMGUI_SFML_FIND_SFML "Use find_package to find SFML" OFF)
+option(IMGUI_SFML_IMGUI_DEMO "Build imgui_demo.cpp" ON)
+FetchContent_MakeAvailable(imgui-sfml)
 
 add_executable(main src/main.cpp
         src/animation.cpp
@@ -23,9 +52,8 @@ add_executable(main src/main.cpp
         headers/definitions.hpp
         src/inputhandler.cpp
         headers/inputhandler.hpp
-        headers/inputhandler.hpp
 )
-target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window)
+target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window PUBLIC ImGui-SFML::ImGui-SFML)
 target_compile_features(main PRIVATE cxx_std_17)
 
 if(WIN32)
