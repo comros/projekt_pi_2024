@@ -17,24 +17,23 @@ FetchContent_Declare(SFML
         EXCLUDE_FROM_ALL
         SYSTEM
 )
+FetchContent_MakeAvailable(SFML)
 
 # ImGui import
 FetchContent_Declare(imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui
-)
+        GIT_TAG v1.89.9
+        GIT_SHALLOW ON
+        EXCLUDE_FROM_ALL
+        SYSTEM)
+FetchContent_MakeAvailable(imgui)
+FetchContent_GetProperties(imgui SOURCE_DIR IMGUI_DIR)
 
 # ImGui-SFML import
 FetchContent_Declare(imgui-sfml
         GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
         GIT_TAG        2.6.x
 )
-
-
-# Building libraries
-
-FetchContent_MakeAvailable(SFML)
-FetchContent_MakeAvailable(imgui)
-
 
 # ImGui-SFML setup
 set(IMGUI_DIR ${imgui_SOURCE_DIR})
