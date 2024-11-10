@@ -2,12 +2,19 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
+
 Game::Game()
 {
     mWindow.setFramerateLimit(60);
 
     // ImGui init, I cast it to void to get rid of the unused result warning
     (void)ImGui::SFML::Init(mWindow);
+
+    // Load background music once
+    backgroundMusic.openFromFile(BACKGROUND_MUSIC);
+    backgroundMusic.setLoop(true);
+    backgroundMusic.play();
+    backgroundMusic.setVolume(10);
 
     // Load terrain texture once
     mTTerrain.loadFromFile(TERRAIN_ATLAS);
@@ -33,6 +40,7 @@ void Game::run() {
         update(deltaTime);
         render();
     }
+
 }
 
 // GUI events has to be in the main thread for best portability
@@ -42,6 +50,16 @@ void Game::processEvents() {
         ImGui::SFML::ProcessEvent(mWindow, event);
         mInputHandler.handleEvent(event, mWindow, mPlayer);
     }
+
+    // Pause the music when window lost focus
+    if (event.type == sf::Event::LostFocus) {
+        backgroundMusic.pause();
+    }
+    // Plays the music when window gain focus
+    if (event.type == sf::Event::GainedFocus) {
+        backgroundMusic.play();
+    }
+
 }
 
 void Game::update(float deltaTime)
@@ -125,3 +143,4 @@ void Game::imgui(sf::Clock deltaClock, Player& player)
 
     ImGui::SFML::Render(mWindow);
 }
+

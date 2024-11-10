@@ -2,8 +2,10 @@
 #define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "../headers/animation.hpp"
 #include "../headers/definitions.hpp"
+#include "SFML/Audio/SoundBuffer.hpp"
 
 // Declaring animation set for player
 enum class PlayerAnimation {
@@ -48,13 +50,17 @@ private:
     void checkBounds();
     void animate(float deltaTime);
 
+    sf::SoundBuffer mStepBuffer;
+    sf::Sound mStepSound;
+    void stepSoundPlay();
+    void stepSoundStop();
+
     sf::Sprite mSprite;
     sf::Vector2f mPosition = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
     sf::Vector2f mDirection;
     sf::Vector2f mVelocity;
     sf::View mView;
     float mSpeed = 100.0f;
-
     float mZoomFactor = 0.225f;
     bool mIsCameraLocked = true;
     sf::Vector2f fixedCameraPosition = {0, 0};

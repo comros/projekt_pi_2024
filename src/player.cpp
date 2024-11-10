@@ -23,6 +23,11 @@ Player::Player()
     mAnimations[static_cast<int>(PlayerAnimation::WalkUp)] = Animation(0, PLAYER_HEIGHT*3, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
     mAnimations[static_cast<int>(PlayerAnimation::WalkRightUp)] = Animation(0, PLAYER_HEIGHT*4, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
     mAnimations[static_cast<int>(PlayerAnimation::WalkRightDown)] = Animation(0, PLAYER_HEIGHT*5, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
+
+    mStepBuffer.loadFromFile(STEPSOUND);
+    mStepSound.setBuffer(mStepBuffer);
+    mStepSound.setLoop(true);
+    mStepSound.setPitch(0.7f);
 }
 
 void Player::setDirection(const sf::Vector2f& newDirection)
@@ -59,6 +64,8 @@ void Player::animate(float deltaTime)
 void Player::updatePosition(const float deltaTime)
 {
 
+    if(mDirection.x != 0 || mDirection.y != 0) stepSoundPlay();
+    else stepSoundStop();
     // Only normalize for velocity, do not alter `direction` directly for animation
     sf::Vector2f normalizedDirection = mDirection;
     float vectorLength = std::sqrt(mDirection.x * mDirection.x + mDirection.y * mDirection.y);
@@ -106,4 +113,18 @@ void Player::updateCamera(sf::RenderWindow& window)
 
     mView.zoom(mZoomFactor);
     window.setView(mView);
+}
+
+void Player::stepSoundPlay()
+{
+    if (mStepSound.getStatus() != sf::Sound::Playing) {
+        mStepSound.play();
+    }
+}
+
+void Player::stepSoundStop()
+{
+    if (mStepSound.getStatus() == sf::Sound::Playing) {
+        mStepSound.stop();
+    }
 }

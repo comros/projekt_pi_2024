@@ -18,4 +18,7 @@
 
 #define TERRAIN_ATLAS "../../assets/terrain/test_tilemap.png"
 
+#define BACKGROUND_MUSIC "../../assets/sound/Background.ogg"
+#define STEPSOUND "../../assets/sound/StepSound.ogg"
+
 #endif //DEFINITIONS_HPP
