@@ -5,7 +5,7 @@
 
 Game::Game()
 {
-    mWindow.setFramerateLimit(60);
+    mWindow.setFramerateLimit(144);
 
     // ImGui init, I cast it to void to get rid of the unused result warning
     (void)ImGui::SFML::Init(mWindow);
@@ -35,10 +35,11 @@ Game::~Game()
 void Game::run() {
     while (mWindow.isOpen()) {
         // Calculating deltaTime for fps independency
-        float deltaTime = mClock.restart().asSeconds();
+        const float deltaTime = mClock.restart().asSeconds();
+
         processEvents();
         update(deltaTime);
-        render();
+        render(deltaTime);
     }
 
 }
@@ -62,7 +63,7 @@ void Game::processEvents() {
 
 }
 
-void Game::update(float deltaTime)
+void Game::update(const float deltaTime)
 {
     if(mWindow.hasFocus()) mPlayer.setDirection(InputHandler::getPlayerDirection());
 
@@ -110,10 +111,7 @@ void Game::generateMap() {
     }
 }
 
-void Game::render() {
-
-    // DeltaClock needed for ImGui
-    const sf::Clock deltaClock;
+void Game::render(float deltaTime) {
 
     // Clear and render the window contents
     mWindow.clear(sf::Color(19,141,89,255));
@@ -121,20 +119,23 @@ void Game::render() {
     mWindow.draw(mPlayer.getSprite());
 
     // ImGui rendering
-    imgui(deltaClock, mPlayer);
+    imgui(deltaTime, mPlayer);
 
     mWindow.display();
 }
 
-void Game::imgui(sf::Clock deltaClock, Player& player)
+void Game::imgui(const float deltaTime, Player& player)
 {
     sf::Text text;
     float playerSpeed = player.getSpeed();
     static float effectsVolume = 100.0f;
     float musicVolume = backgroundMusic.getVolume()*10;
-    ImGui::SFML::Update(mWindow, deltaClock.restart());
+    const float fps = 1.0f / deltaTime;
+    ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
 
     ImGui::Begin("Player");
+
+    ImGui::Text("FPS: %.0f", fps);
 
     ImGui::Text("x: %g, y: %g", player.getPosition().x, player.getPosition().y);
 
@@ -149,13 +150,8 @@ void Game::imgui(sf::Clock deltaClock, Player& player)
         backgroundMusic.setVolume(musicVolume/10); // Sets global volume in player
     }
 
-
-
     ImGui::End();
 
     ImGui::SFML::Render(mWindow);
-
-
-
 }
 

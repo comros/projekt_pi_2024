@@ -47,7 +47,7 @@ public:
     float getZoomFactor() const { return mZoomFactor; }
     void setZoomFactor(const float newZoomFactor) { mZoomFactor -= newZoomFactor; }
 
-    void setEffectsVolume(float volume);
+    void setEffectsVolume(const float volume) { mSoundEffects.setGlobalVolume(volume); };
 
 private:
     void checkBounds();

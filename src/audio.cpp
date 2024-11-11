@@ -22,17 +22,3 @@ void Audio::stopSound(const std::string& id) {
         mSounds[id].stop();
     }
 }
-
-void Audio::setPitch(const std::string& id, float pitch) {
-    if (mSounds.count(id)) {
-        mSounds[id].setPitch(pitch);
-    }
-}
-
-void Audio::setGlobalVolume(float volume) {
-    mVolume = volume;
-    for (auto& sound : mSounds) {
-        sound.second.setVolume(volume);
-    }
-}
-

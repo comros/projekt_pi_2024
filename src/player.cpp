@@ -116,8 +116,3 @@ void Player::updateCamera(sf::RenderWindow& window)
     mView.zoom(mZoomFactor);
     window.setView(mView);
 }
-
-void Player::setEffectsVolume(float volume) {
-    mSoundEffects.setGlobalVolume(volume); // Allows to set effects volume outside of player class
-}
-

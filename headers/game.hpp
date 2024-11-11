@@ -17,8 +17,8 @@ private:
     void processEvents();
     void update(float deltaTime);
     void generateMap();
-    void render();
-    void imgui(sf::Clock deltaClock, Player& player); // ImGui
+    void render(float deltaTime);
+    void imgui(float deltaTime, Player& player); // ImGui
 
 
     sf::Music backgroundMusic;
