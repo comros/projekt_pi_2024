@@ -12,14 +12,13 @@ public:
     void playSound(const std::string& id);
     void stopSound(const std::string& id);
     void setPitch(const std::string& id, float pitch);
-
     void setGlobalVolume(float volume);
 
 
 private:
     std::unordered_map<std::string, sf::SoundBuffer> mSoundBuffers;
     std::unordered_map<std::string, sf::Sound> mSounds;
-    float mVolume = 50.0f;  // domyślna głośność
+    float mVolume = 50.0f;  // default volume
 };
 
 

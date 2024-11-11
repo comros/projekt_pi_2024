@@ -118,6 +118,6 @@ void Player::updateCamera(sf::RenderWindow& window)
 }
 
 void Player::setEffectsVolume(float volume) {
-    mSoundEffects.setGlobalVolume(volume); // Allows to set global volume outside of player class
+    mSoundEffects.setGlobalVolume(volume); // Allows to set effects volume outside of player class
 }
 

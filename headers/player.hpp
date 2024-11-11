@@ -48,6 +48,7 @@ public:
     void setZoomFactor(const float newZoomFactor) { mZoomFactor -= newZoomFactor; }
 
     void setEffectsVolume(float volume);
+
 private:
     void checkBounds();
     void animate(float deltaTime);
