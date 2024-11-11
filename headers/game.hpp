@@ -21,7 +21,6 @@ private:
     void imgui(sf::Clock deltaClock, Player& player); // ImGui
 
 
-
     sf::Music backgroundMusic;
 
 

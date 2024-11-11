@@ -130,6 +130,8 @@ void Game::imgui(sf::Clock deltaClock, Player& player)
 {
     sf::Text text;
     float playerSpeed = player.getSpeed();
+    static float effectsVolume = 100.0f;
+    float musicVolume = backgroundMusic.getVolume()*10;
     ImGui::SFML::Update(mWindow, deltaClock.restart());
 
     ImGui::Begin("Player");
@@ -139,8 +141,21 @@ void Game::imgui(sf::Clock deltaClock, Player& player)
     ImGui::SliderFloat("Speed",&playerSpeed, 0.0f, 300.0f);
     player.setSpeed(playerSpeed);
 
+    if (ImGui::SliderFloat("Effects Volume", &effectsVolume, 0.0f, 200.0f)) {
+        player.setEffectsVolume(effectsVolume); // Sets global volume in player
+    }
+
+    if (ImGui::SliderFloat("Music Volume", &musicVolume, 0.0f, 200.0f)) {
+        backgroundMusic.setVolume(musicVolume/10); // Sets global volume in player
+    }
+
+
+
     ImGui::End();
 
     ImGui::SFML::Render(mWindow);
+
+
+
 }
 

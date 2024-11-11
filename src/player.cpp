@@ -2,10 +2,12 @@
 #include <cmath>
 
 #include "../headers/InputHandler.hpp"
+#include "../headers/audio.hpp"
 
 // Setting sprite's starting values
 Player::Player()
 {
+
     mSprite.setPosition(mPosition);
     mSprite.setOrigin(PLAYER_WIDTH / 2, PLAYER_HEIGHT / 2);
 
@@ -24,10 +26,8 @@ Player::Player()
     mAnimations[static_cast<int>(PlayerAnimation::WalkRightUp)] = Animation(0, PLAYER_HEIGHT*4, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
     mAnimations[static_cast<int>(PlayerAnimation::WalkRightDown)] = Animation(0, PLAYER_HEIGHT*5, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
 
-    mStepBuffer.loadFromFile(STEPSOUND);
-    mStepSound.setBuffer(mStepBuffer);
-    mStepSound.setLoop(true);
-    mStepSound.setPitch(0.7f);
+    mSoundEffects.loadSound("Walk", WALKSOUND);
+    mSoundEffects.setPitch("Walk",0.7f);
 }
 
 void Player::setDirection(const sf::Vector2f& newDirection)
@@ -64,8 +64,10 @@ void Player::animate(float deltaTime)
 void Player::updatePosition(const float deltaTime)
 {
 
-    if(mDirection.x != 0 || mDirection.y != 0) stepSoundPlay();
-    else stepSoundStop();
+    if(mDirection.x != 0 || mDirection.y != 0) mSoundEffects.playSound("Walk"); //Starts playing walking sound
+    else mSoundEffects.stopSound("Walk"); // //Stops playing walking sound
+    mSoundEffects.setPitch("Walk",mSpeed / 250.0f); // Sets sound playing speed according to player speed
+
     // Only normalize for velocity, do not alter `direction` directly for animation
     sf::Vector2f normalizedDirection = mDirection;
     float vectorLength = std::sqrt(mDirection.x * mDirection.x + mDirection.y * mDirection.y);
@@ -115,16 +117,7 @@ void Player::updateCamera(sf::RenderWindow& window)
     window.setView(mView);
 }
 
-void Player::stepSoundPlay()
-{
-    if (mStepSound.getStatus() != sf::Sound::Playing) {
-        mStepSound.play();
-    }
+void Player::setEffectsVolume(float volume) {
+    mSoundEffects.setGlobalVolume(volume); // Allows to set global volume outside of player class
 }
 
-void Player::stepSoundStop()
-{
-    if (mStepSound.getStatus() == sf::Sound::Playing) {
-        mStepSound.stop();
-    }
-}

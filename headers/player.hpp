@@ -5,7 +5,8 @@
 #include <SFML/Audio.hpp>
 #include "../headers/animation.hpp"
 #include "../headers/definitions.hpp"
-#include "SFML/Audio/SoundBuffer.hpp"
+#include "../headers/audio.hpp"
+
 
 // Declaring animation set for player
 enum class PlayerAnimation {
@@ -46,14 +47,13 @@ public:
     float getZoomFactor() const { return mZoomFactor; }
     void setZoomFactor(const float newZoomFactor) { mZoomFactor -= newZoomFactor; }
 
+    void setEffectsVolume(float volume);
 private:
     void checkBounds();
     void animate(float deltaTime);
 
-    sf::SoundBuffer mStepBuffer;
-    sf::Sound mStepSound;
-    void stepSoundPlay();
-    void stepSoundStop();
+    Audio mSoundEffects;
+
 
     sf::Sprite mSprite;
     sf::Vector2f mPosition = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
@@ -68,6 +68,7 @@ private:
     // Making an array of animations (default constructor is needed)
     Animation mAnimations[static_cast<int>(PlayerAnimation::Count)];
     PlayerAnimation mCurrentAnimation = {PlayerAnimation::IdleDown};
+
 };
 
 
