@@ -12,7 +12,6 @@ public:
     void playSound(const std::string& id);
     void stopSound(const std::string& id);
 
-
     void setPitch(const std::string& id, float pitch)
     {
         if (mSounds.count(id)) {

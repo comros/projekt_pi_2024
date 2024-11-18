@@ -55,7 +55,7 @@ add_executable(main src/main.cpp
         src/audio.cpp
 
 )
-target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window PUBLIC ImGui-SFML::ImGui-SFML)
+target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system sfml-main PUBLIC ImGui-SFML::ImGui-SFML)
 target_compile_features(main PRIVATE cxx_std_17)
 
 if(WIN32)

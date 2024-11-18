@@ -1,8 +1,10 @@
 #include "../headers/player.hpp"
 #include <cmath>
+#include <iostream>
 
 #include "../headers/InputHandler.hpp"
 #include "../headers/audio.hpp"
+#include <random>
 
 // Setting sprite's starting values
 Player::Player()
@@ -27,7 +29,7 @@ Player::Player()
     mAnimations[static_cast<int>(PlayerAnimation::WalkRightDown)] = Animation(0, PLAYER_HEIGHT*5, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WALK_ATLAS);
 
     mSoundEffects.loadSound("Walk", WALKSOUND);
-    mSoundEffects.setPitch("Walk",0.7f);
+    mSoundEffects.setGlobalVolume(15.0f);
 }
 
 void Player::setDirection(const sf::Vector2f& newDirection)
@@ -66,7 +68,13 @@ void Player::updatePosition(const float deltaTime)
 
     if(mDirection.x != 0 || mDirection.y != 0) mSoundEffects.playSound("Walk"); //Starts playing walking sound
     else mSoundEffects.stopSound("Walk"); // //Stops playing walking sound
-    mSoundEffects.setPitch("Walk",mSpeed / 250.0f); // Sets sound playing speed according to player speed
+
+    // Creating randomized value for pitch
+    std::random_device random;
+    std::uniform_real_distribution<float> dist(0.5f, 1.25f);
+    std::cout << dist(random) << "\n";
+
+    mSoundEffects.setPitch("Walk",mSpeed / 90.0f * dist(random) ); // Sets sound playing speed according to player speed
 
     // Only normalize for velocity, do not alter `direction` directly for animation
     sf::Vector2f normalizedDirection = mDirection;
