@@ -35,7 +35,7 @@ sf::Vector2f InputHandler::getPlayerDirection()
     sf::Vector2f direction(0, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        direction.y != -1 ? direction.y = 1 : direction.y = 0;
+        direction.y != -1 ?   direction.y = 1 : direction.y = 0;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         direction.y != 1 ? direction.y = -1 : direction.y = 0;

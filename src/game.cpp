@@ -2,12 +2,19 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
+
 Game::Game()
 {
-    mWindow.setFramerateLimit(60);
+    mWindow.setFramerateLimit(144);
 
     // ImGui init, I cast it to void to get rid of the unused result warning
     (void)ImGui::SFML::Init(mWindow);
+
+    // Load background music once
+    backgroundMusic.openFromFile(BACKGROUND_MUSIC);
+    backgroundMusic.setLoop(true);
+    backgroundMusic.play();
+    backgroundMusic.setVolume(10);
 
     // Load terrain texture once
     mTTerrain.loadFromFile(TERRAIN_ATLAS);
@@ -28,11 +35,13 @@ Game::~Game()
 void Game::run() {
     while (mWindow.isOpen()) {
         // Calculating deltaTime for fps independency
-        float deltaTime = mClock.restart().asSeconds();
+        const float deltaTime = mClock.restart().asSeconds();
+
         processEvents();
         update(deltaTime);
-        render();
+        render(deltaTime);
     }
+
 }
 
 // GUI events has to be in the main thread for best portability
@@ -42,9 +51,19 @@ void Game::processEvents() {
         ImGui::SFML::ProcessEvent(mWindow, event);
         mInputHandler.handleEvent(event, mWindow, mPlayer);
     }
+
+    // Pause the music when window lost focus
+    if (event.type == sf::Event::LostFocus) {
+        backgroundMusic.pause();
+    }
+    // Plays the music when window gain focus
+    if (event.type == sf::Event::GainedFocus) {
+        backgroundMusic.play();
+    }
+
 }
 
-void Game::update(float deltaTime)
+void Game::update(const float deltaTime)
 {
     if(mWindow.hasFocus()) mPlayer.setDirection(InputHandler::getPlayerDirection());
 
@@ -92,10 +111,7 @@ void Game::generateMap() {
     }
 }
 
-void Game::render() {
-
-    // DeltaClock needed for ImGui
-    const sf::Clock deltaClock;
+void Game::render(float deltaTime) {
 
     // Clear and render the window contents
     mWindow.clear(sf::Color(19,141,89,255));
@@ -103,25 +119,39 @@ void Game::render() {
     mWindow.draw(mPlayer.getSprite());
 
     // ImGui rendering
-    imgui(deltaClock, mPlayer);
+    imgui(deltaTime, mPlayer);
 
     mWindow.display();
 }
 
-void Game::imgui(sf::Clock deltaClock, Player& player)
+void Game::imgui(const float deltaTime, Player& player)
 {
     sf::Text text;
     float playerSpeed = player.getSpeed();
-    ImGui::SFML::Update(mWindow, deltaClock.restart());
+    static float effectsVolume = 100.0f;
+    float musicVolume = backgroundMusic.getVolume()*10;
+    const float fps = 1.0f / deltaTime;
+    ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
 
     ImGui::Begin("Player");
+
+    ImGui::Text("FPS: %.0f", fps);
 
     ImGui::Text("x: %g, y: %g", player.getPosition().x, player.getPosition().y);
 
     ImGui::SliderFloat("Speed",&playerSpeed, 0.0f, 300.0f);
     player.setSpeed(playerSpeed);
 
+    if (ImGui::SliderFloat("Effects Volume", &effectsVolume, 0.0f, 200.0f)) {
+        player.setEffectsVolume(effectsVolume); // Sets global volume in player
+    }
+
+    if (ImGui::SliderFloat("Music Volume", &musicVolume, 0.0f, 200.0f)) {
+        backgroundMusic.setVolume(musicVolume/10); // Sets global volume in player
+    }
+
     ImGui::End();
 
     ImGui::SFML::Render(mWindow);
 }
+

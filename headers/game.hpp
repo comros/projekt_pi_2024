@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include  <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "../headers/inputhandler.hpp"
 #include "../headers/player.hpp"
@@ -16,8 +17,12 @@ private:
     void processEvents();
     void update(float deltaTime);
     void generateMap();
-    void render();
-    void imgui(sf::Clock deltaClock, Player& player); // ImGui
+    void render(float deltaTime);
+    void imgui(float deltaTime, Player& player); // ImGui
+
+
+    sf::Music backgroundMusic;
+
 
     sf::RenderWindow mWindow = { sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Projekt pi 2024", sf::Style::Default};
     sf::Clock mClock;              // Needed for deltaTime
