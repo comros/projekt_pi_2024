@@ -13,6 +13,12 @@ WorldGen::WorldGen(unsigned int width, unsigned int height, unsigned int terrain
     mTerrainValues.resize(height, std::vector<float>(width, 0.0f));
     mMoistureValues.resize(height, std::vector<float>(width, 0.0f));
 
+    if (!mTextureAtlas.loadFromFile("../../assets/terrain/terrain.png")) {
+        // Handle error
+    }
+    mTextureAtlas.setSmooth(false);
+
+
     // Precompute falloff (e.g., distance from center) for map
     precomputeFalloff(mWidth, mHeight);
 
@@ -82,34 +88,57 @@ void WorldGen::generateMap() {
     mTerrainNoise = PerlinNoise(mTerrainSeed);
     mMoistureNoise = PerlinNoise(mMoistureSeed);
 
-    // Resize value arrays to fit the map dimensions
+    // Resize value arrays and tile grid to fit the map dimensions
     mTerrainValues.resize(mHeight, std::vector<float>(mWidth, 0.0f));
     mMoistureValues.resize(mHeight, std::vector<float>(mWidth, 0.0f));
-    mFalloffValues.resize(mHeight, std::vector<float>(mWidth, 0.0f));
+    mTiles.resize(mHeight, std::vector<Tile>(mWidth, Tile(mTextureAtlas, sf::Vector2f(1.0f, 1.0f))));
 
-    // Recompute falloff and noise patterns based on new seeds
+    // Recompute falloff and noise patterns
     precomputeFalloff(mWidth, mHeight);
     precomputeNoise(mWidth, mHeight, 16);
 
-    // Generate tiles based on updated terrain and moisture values
+    // Generate tiles
     for (unsigned int y = 0; y < mHeight; ++y) {
         for (unsigned int x = 0; x < mWidth; ++x) {
             float terrainValue = mTerrainValues[y][x];
             float moistureValue = mMoistureValues[y][x];
 
-            // Get the color based on terrain and moisture values
-            sf::Color tileColor = getTileColor(terrainValue, moistureValue);
+            // Determine the tile type based on terrain and moisture values
+            Tile::TileType tileType;
+            if (terrainValue < thresholdDeepWater) {
+                tileType = Tile::TileType::DeepWater;
+            } else if (terrainValue < thresholdShallowWater) {
+                tileType = Tile::TileType::ShallowWater;
+            } else if (terrainValue < thresholdSand) {
+                if (moistureValue < -0.2f)
+                    tileType = Tile::TileType::DrySand;
+                else if (moistureValue < 0.2f)
+                    tileType = Tile::TileType::NormalSand;
+                else
+                    tileType = Tile::TileType::WetSand;
+            } else if (terrainValue < thresholdGrass) {
+                if (moistureValue < -0.2f)
+                    tileType = Tile::TileType::DryGrass;
+                else if (moistureValue < 0.2f)
+                    tileType = Tile::TileType::NormalGrass;
+                else
+                    tileType = Tile::TileType::LushGrass;
+            } else {
+                if (moistureValue < -0.2f)
+                    tileType = Tile::TileType::RockyMountain;
+                else if (moistureValue < 0.2f)
+                    tileType = Tile::TileType::Mountain;
+                else
+                    tileType = Tile::TileType::SnowyMountain;
+            }
 
-            // Create the tile as a rectangle
-            sf::RectangleShape tile(sf::Vector2f(16.0f, 16.0f));
-            tile.setPosition(x * 16.0f, y * 16.0f);  // Position based on grid coordinates
-            tile.setFillColor(tileColor);  // Set the color of the tile
-
-            // Add the tile to the list of all tiles (for later rendering)
-            mTiles.push_back(tile);
+            // Use this texture in your Tile objects
+            mTiles[y][x] = Tile(mTextureAtlas, sf::Vector2f(x * 16.0f, y * 16.0f));
+            mTiles[y][x].setType(tileType);
         }
     }
 }
+
 
 // Precomputes a falloff effect based on the distance from the map's center
 void WorldGen::precomputeFalloff(int mapWidth, int mapHeight) {
@@ -156,35 +185,23 @@ void WorldGen::precomputeNoise(int mapWidth, int mapHeight, int tileSize) {
 
 // Renders the tiles that are visible within the current view of the window
 void WorldGen::render(sf::RenderWindow& window) {
-    // Get the view's visible bounds (the area of the map that is currently visible)
+    // Get the view's visible bounds
     sf::View view = window.getView();
     sf::FloatRect viewBounds(
-        view.getCenter() - view.getSize() / 2.0f,  // Calculate the top-left corner of the view
-        view.getSize()  // Get the size of the view
+        view.getCenter() - view.getSize() / 2.0f,
+        view.getSize()
     );
 
-    // Calculate the visible grid bounds based on the current view
-    int startX = std::max(0, static_cast<int>(viewBounds.left / 16));  // Tile size is 16x16
+    // Calculate the visible grid bounds
+    int startX = std::max(0, static_cast<int>(viewBounds.left / 16));
     int startY = std::max(0, static_cast<int>(viewBounds.top / 16));
     int endX = std::min(static_cast<int>(mWidth), static_cast<int>((viewBounds.left + viewBounds.width) / 16) + 1);
     int endY = std::min(static_cast<int>(mHeight), static_cast<int>((viewBounds.top + viewBounds.height) / 16) + 1);
 
-    // Render only the visible tiles within the calculated bounds
+    // Render only the visible tiles
     for (int y = startY; y < endY; ++y) {
         for (int x = startX; x < endX; ++x) {
-            float terrainValue = mTerrainValues[y][x];
-            float moistureValue = mMoistureValues[y][x];
-
-            // Get the color for the current tile
-            sf::Color tileColor = getTileColor(terrainValue, moistureValue);
-
-            // Create a rectangle for the tile
-            sf::RectangleShape tile(sf::Vector2f(16.0f, 16.0f));
-            tile.setPosition(x * 16.0f, y * 16.0f);  // Position based on grid coordinates
-            tile.setFillColor(tileColor);  // Set the color of the tile
-
-            // Draw the tile on the window
-            window.draw(tile);
+            window.draw(mTiles[y][x].getSprite());
         }
     }
 }

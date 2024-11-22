@@ -57,6 +57,7 @@ add_executable(main src/main.cpp
         src/worldgen.cpp
         src/perlinnoise.cpp
         src/perlinnoise.cpp
+        headers/tile.hpp
 
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system sfml-main PUBLIC ImGui-SFML::ImGui-SFML)

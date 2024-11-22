@@ -3,7 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "PerlinNoise.hpp"  // Include your PerlinNoise class header file
+#include "PerlinNoise.hpp"
+#include "../headers/tile.hpp"
 #include <random>
 
 class WorldGen {
@@ -42,7 +43,8 @@ private:
     std::vector<std::vector<float>> mFalloffValues;
 
     // Tiles to render
-    std::vector<sf::RectangleShape> mTiles;
+    std::vector<std::vector<Tile>> mTiles;
+    sf::Texture mTextureAtlas;
 
     // Noise and falloff generation functions
     float generateFractalNoise(int x, int y, const PerlinNoise& noise) const;
