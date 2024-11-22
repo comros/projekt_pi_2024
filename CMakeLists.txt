@@ -53,6 +53,10 @@ add_executable(main src/main.cpp
         headers/inputhandler.hpp
         headers/audio.hpp
         src/audio.cpp
+        headers/worldgen.hpp
+        src/worldgen.cpp
+        src/perlinnoise.cpp
+        src/perlinnoise.cpp
 
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system sfml-main PUBLIC ImGui-SFML::ImGui-SFML)
