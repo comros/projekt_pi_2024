@@ -25,6 +25,7 @@ public:
 
     // Main map generation method
     void generateMap();
+    int calculateBitmask(int x, int y, Tile::TileType type) const;
 
     // Tile rendering method
     void render(sf::RenderWindow& window);
@@ -48,7 +49,6 @@ private:
 
     // Noise and falloff generation functions
     float generateFractalNoise(int x, int y, const PerlinNoise& noise) const;
-    sf::Color getTileColor(float terrainValue, float moistureValue) const;
     void precomputeFalloff(int mapWidth, int mapHeight);
     void precomputeNoise(int mapWidth, int mapHeight, int tileSize);
 };

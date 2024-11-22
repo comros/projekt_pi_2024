@@ -13,7 +13,7 @@ WorldGen::WorldGen(unsigned int width, unsigned int height, unsigned int terrain
     mTerrainValues.resize(height, std::vector<float>(width, 0.0f));
     mMoistureValues.resize(height, std::vector<float>(width, 0.0f));
 
-    if (!mTextureAtlas.loadFromFile("../../assets/terrain/terrain.png")) {
+    if (!mTextureAtlas.loadFromFile("../../assets/terrain/terrain_bitmasked.png")) {
         // Handle error
     }
     mTextureAtlas.setSmooth(false);
@@ -43,46 +43,13 @@ float WorldGen::generateFractalNoise(int x, int y, const PerlinNoise& noise) con
     return value;
 }
 
-// Returns the color of a tile based on its terrain and moisture values
-sf::Color WorldGen::getTileColor(float terrainValue, float moistureValue) const {
-    // Define color thresholds for different terrain types based on noise values
-    if (terrainValue < thresholdDeepWater) {
-        return sf::Color(0, 62, 178); // Deep water
-    } else if (terrainValue < thresholdShallowWater) {
-        return sf::Color(9, 82, 198); // Shallow water
-    } else if (terrainValue < thresholdSand) {
-        // Sand type based on moisture value
-        if (moistureValue < -0.2f)
-            return sf::Color(134, 118, 69); // Dry sand
-        else if (moistureValue < 0.2f)
-            return sf::Color(164, 148, 99); // Normal sand
-        else
-            return sf::Color(194, 178, 129); // Wet sand
-    } else if (terrainValue < thresholdGrass) {
-        // Grass type based on moisture value
-        if (moistureValue < -0.2f)
-            return sf::Color(40, 77, 0); // Dry grass
-        else if (moistureValue < 0.2f)
-            return sf::Color(60, 97, 20); // Normal grass
-        else
-            return sf::Color(90, 127, 50); // Lush grass
-    } else {
-        // Mountain types based on moisture value
-        if (moistureValue < -0.2f)
-            return sf::Color(139, 141, 123); // Rocky mountain
-        else if (moistureValue < 0.2f)
-            return sf::Color(160, 162, 143); // Mountain
-        else
-            return sf::Color(235, 235, 235); // Snowy mountain
-    }
-}
-
 // Generates the map by populating terrain and moisture values for each tile
 void WorldGen::generateMap() {
     // Clear existing data
     mTerrainValues.clear();
     mMoistureValues.clear();
     mTiles.clear();
+    mTextureAtlas.setSmooth(false);
 
     // Reinitialize noise objects with new seeds
     mTerrainNoise = PerlinNoise(mTerrainSeed);
@@ -137,6 +104,26 @@ void WorldGen::generateMap() {
             mTiles[y][x].setType(tileType);
         }
     }
+
+    // Apply auto-tiling
+    for (unsigned int y = 0; y < mHeight; ++y) {
+        for (unsigned int x = 0; x < mWidth; ++x) {
+            int bitmask = calculateBitmask(x, y, mTiles[y][x].getType());
+            mTiles[y][x].setTextureByBitmask(bitmask);
+        }
+    }
+}
+
+int WorldGen::calculateBitmask(int x, int y, Tile::TileType type) const {
+    int bitmask = 0;
+
+    // Check neighbors (T, R, B, L)
+    if (y > 0 && mTiles[y - 1][x].getType() == type) bitmask |= 1 << 0; // Top
+    if (x < mWidth - 1 && mTiles[y][x + 1].getType() == type) bitmask |= 1 << 1; // Right
+    if (y < mHeight - 1 && mTiles[y + 1][x].getType() == type) bitmask |= 1 << 2; // Bottom
+    if (x > 0 && mTiles[y][x - 1].getType() == type) bitmask |= 1 << 3; // Left
+
+    return bitmask;
 }
 
 
