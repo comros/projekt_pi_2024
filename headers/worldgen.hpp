@@ -19,9 +19,8 @@ public:
     float thresholdGrass = 0.6f;
 
     int mTerrainSeed;
-    int mMoistureSeed;
 
-    WorldGen(unsigned int width, unsigned int height, unsigned int terrainSeed, unsigned int moistureSeed);
+    WorldGen(unsigned int width, unsigned int height, unsigned int terrainSeed);
 
     // Main map generation method
     void generateMap();
@@ -36,7 +35,6 @@ private:
 
     // Noise generators for terrain and moisture
     PerlinNoise mTerrainNoise;
-    PerlinNoise mMoistureNoise;
 
     // Vectors to store terrain and moisture values
     std::vector<std::vector<float>> mTerrainValues;

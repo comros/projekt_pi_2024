@@ -4,7 +4,7 @@
 
 
 Game::Game()
-: mWorldGen(512, 512, std::random_device{}(), std::random_device{}())
+: mWorldGen(512, 512, std::random_device{}())
 {
     mWindow.setFramerateLimit(144);
 
@@ -70,7 +70,7 @@ void Game::update(const float deltaTime)
 void Game::render(float deltaTime) {
 
     // Clear and render the window contents
-    mWindow.clear(sf::Color(0,62,178,255));
+    mWindow.clear(sf::Color(0,0,0,255));
 
     mWorldGen.render(mWindow);
 
@@ -116,7 +116,6 @@ void Game::imgui(const float deltaTime, Player& player)
     // Sliders for controlling the seeds
     ImGui::Text("Seeds:");
     ImGui::InputInt("Terrain Seed", &mWorldGen.mTerrainSeed);
-    ImGui::InputInt("Moisture Seed", &mWorldGen.mMoistureSeed);
 
     // Sliders for world generation parameters
     ImGui::Text("Noise Parameters:");

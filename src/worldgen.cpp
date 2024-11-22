@@ -1,19 +1,17 @@
 #include "../headers/WorldGen.hpp"
 
 // Constructor
-WorldGen::WorldGen(unsigned int width, unsigned int height, unsigned int terrainSeed, unsigned int moistureSeed)
+WorldGen::WorldGen(unsigned int width, unsigned int height, unsigned int terrainSeed)
 :   mWidth(width),
     mHeight(height),
     mTerrainSeed(terrainSeed),
-    mMoistureSeed(moistureSeed),
-    mTerrainNoise(terrainSeed),  // Initialize Perlin noise generator for terrain
-    mMoistureNoise(moistureSeed) // Initialize Perlin noise generator for moisture
+    mTerrainNoise(terrainSeed)  // Initialize Perlin noise generator for terrain
 {
     // Ensure terrain and moisture values are initialized properly (default to 0.0f)
     mTerrainValues.resize(height, std::vector<float>(width, 0.0f));
     mMoistureValues.resize(height, std::vector<float>(width, 0.0f));
 
-    if (!mTextureAtlas.loadFromFile("../../assets/terrain/terrain_bitmasked.png")) {
+    if (!mTextureAtlas.loadFromFile("../../assets/terrain/terrain_bitmasked3.png")) {
         // Handle error
     }
     mTextureAtlas.setSmooth(false);
@@ -53,7 +51,6 @@ void WorldGen::generateMap() {
 
     // Reinitialize noise objects with new seeds
     mTerrainNoise = PerlinNoise(mTerrainSeed);
-    mMoistureNoise = PerlinNoise(mMoistureSeed);
 
     // Resize value arrays and tile grid to fit the map dimensions
     mTerrainValues.resize(mHeight, std::vector<float>(mWidth, 0.0f));
@@ -67,8 +64,7 @@ void WorldGen::generateMap() {
     // Generate tiles
     for (unsigned int y = 0; y < mHeight; ++y) {
         for (unsigned int x = 0; x < mWidth; ++x) {
-            float terrainValue = mTerrainValues[y][x];
-            float moistureValue = mMoistureValues[y][x];
+            float terrainValue = mTerrainValues[y][x];;
 
             // Determine the tile type based on terrain and moisture values
             Tile::TileType tileType;
@@ -77,26 +73,11 @@ void WorldGen::generateMap() {
             } else if (terrainValue < thresholdShallowWater) {
                 tileType = Tile::TileType::ShallowWater;
             } else if (terrainValue < thresholdSand) {
-                if (moistureValue < -0.2f)
-                    tileType = Tile::TileType::DrySand;
-                else if (moistureValue < 0.2f)
                     tileType = Tile::TileType::NormalSand;
-                else
-                    tileType = Tile::TileType::WetSand;
             } else if (terrainValue < thresholdGrass) {
-                if (moistureValue < -0.2f)
-                    tileType = Tile::TileType::DryGrass;
-                else if (moistureValue < 0.2f)
                     tileType = Tile::TileType::NormalGrass;
-                else
-                    tileType = Tile::TileType::LushGrass;
             } else {
-                if (moistureValue < -0.2f)
-                    tileType = Tile::TileType::RockyMountain;
-                else if (moistureValue < 0.2f)
                     tileType = Tile::TileType::Mountain;
-                else
-                    tileType = Tile::TileType::SnowyMountain;
             }
 
             // Use this texture in your Tile objects
@@ -161,9 +142,6 @@ void WorldGen::precomputeNoise(int mapWidth, int mapHeight, int tileSize) {
                     float terrainValue = generateFractalNoise(tileX, tileY, mTerrainNoise);
                     terrainValue = (terrainValue + 1.0f) / 2.0f;  // Normalize to 0-1 range
                     mTerrainValues[tileY][tileX] = terrainValue - mFalloffValues[tileY][tileX]; // Apply falloff to terrain
-
-                    float moistureValue = generateFractalNoise(tileX, tileY, mMoistureNoise);
-                    mMoistureValues[tileY][tileX] = moistureValue;  // Set moisture value
                 }
             }
         }

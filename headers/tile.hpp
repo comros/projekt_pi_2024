@@ -8,15 +8,9 @@ public:
     enum class TileType {
         DeepWater,
         ShallowWater,
-        DrySand,
         NormalSand,
-        WetSand,
-        DryGrass,
         NormalGrass,
-        LushGrass,
-        RockyMountain,
         Mountain,
-        SnowyMountain,
         Default
     };
 
@@ -25,8 +19,7 @@ private:
     TileType mType;
     sf::Texture mTextureAtlas;
 
-    float brightness = 1.35f;
-    float moistBrightness = 1.2f;
+    float brightness = 1.1f;
 
 public:
     // Constructor
@@ -51,43 +44,15 @@ public:
             break;
         case TileType::ShallowWater:
             mSprite.setColor(adjustColorIntensity(sf::Color(9, 82, 198), brightness));  // Make grass color 20% brighter
-
-            break;
-        case TileType::DrySand:
-            mSprite.setColor(adjustColorIntensity(sf::Color(134, 118, 69), brightness));  // Make grass color 20% brighter
-
             break;
         case TileType::NormalSand:
             mSprite.setColor(adjustColorIntensity(sf::Color(164, 148, 99), brightness));  // Make grass color 20% brighter
-
-            break;
-        case TileType::WetSand:
-            mSprite.setColor(adjustColorIntensity(sf::Color(194, 178, 129), brightness));  // Make grass color 20% brighter
-
-            break;
-        case TileType::DryGrass:
-            mSprite.setColor(adjustColorIntensity(sf::Color(40, 77, 0), brightness));  // Make grass color 20% brighter
-
             break;
         case TileType::NormalGrass:
             mSprite.setColor(adjustColorIntensity(sf::Color(60, 97, 20), brightness));  // Make grass color 20% brighter
-
-            break;
-        case TileType::LushGrass:
-            mSprite.setColor(adjustColorIntensity(sf::Color(90, 127, 50), brightness));  // Make grass color 20% brighter
-
-            break;
-        case TileType::RockyMountain:
-            mSprite.setColor(adjustColorIntensity(sf::Color(139, 141, 123), brightness));  // Make grass color 20% brighter
-
             break;
         case TileType::Mountain:
             mSprite.setColor(adjustColorIntensity(sf::Color(160, 162, 143), brightness));  // Make grass color 20% brighter
-
-            break;
-        case TileType::SnowyMountain:
-            mSprite.setColor(adjustColorIntensity(sf::Color(235, 235, 235), brightness));
-
             break;
         case TileType::Default:
         default:

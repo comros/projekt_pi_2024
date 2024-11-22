@@ -59,7 +59,7 @@ private:
 
 
     sf::Sprite mSprite;
-    sf::Vector2f mPosition = {128*16, 128*16}; // Middle of the map (if map is 256x256 and tiles are 16x16)
+    sf::Vector2f mPosition = {256*16, 256*16}; // Middle of the map (if map is 256x256 and tiles are 16x16)
     sf::Vector2f mDirection;
     sf::Vector2f mVelocity;
     sf::View mView;
