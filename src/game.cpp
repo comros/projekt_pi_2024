@@ -4,7 +4,7 @@
 
 
 Game::Game()
-: mWorldGen(256, 256, std::random_device{}(), std::random_device{}())
+: mWorldGen(512, 512, std::random_device{}(), std::random_device{}())
 {
     mWindow.setFramerateLimit(144);
 
