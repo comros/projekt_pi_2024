@@ -15,8 +15,8 @@ public:
 
     float thresholdDeepWater = 0.2f;
     float thresholdShallowWater = 0.4f;
-    float thresholdSand = 0.45f;
-    float thresholdGrass = 0.6f;
+    float thresholdSand = 0.48f;
+    float thresholdGrass = 0.67f;
 
     int mTerrainSeed;
 

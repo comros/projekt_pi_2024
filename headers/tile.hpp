@@ -67,19 +67,19 @@ public:
         // Set color based on tile type
         switch (type) {
         case TileType::DeepWater:
-            mSprite.setColor(adjustColorIntensity(sf::Color(0, 62, 178), brightness));  // Make grass color 20% brighter
+            mSprite.setColor(adjustColorIntensity(sf::Color(33, 115, 184), brightness));  // Make grass color 20% brighter
             break;
         case TileType::ShallowWater:
-            mSprite.setColor(adjustColorIntensity(sf::Color(9, 82, 198), brightness));  // Make grass color 20% brighter
+            mSprite.setColor(adjustColorIntensity(sf::Color(83, 141, 189), brightness));  // Make grass color 20% brighter
             break;
         case TileType::NormalSand:
-            mSprite.setColor(adjustColorIntensity(sf::Color(164, 148, 99), brightness));  // Make grass color 20% brighter
+            mSprite.setColor(adjustColorIntensity(sf::Color(181, 160, 115), brightness));  // Make grass color 20% brighter
             break;
         case TileType::NormalGrass:
-            mSprite.setColor(adjustColorIntensity(sf::Color(60, 97, 20), brightness));  // Make grass color 20% brighter
+            mSprite.setColor(adjustColorIntensity(sf::Color(97, 120, 66), brightness));  // Make grass color 20% brighter
             break;
         case TileType::Mountain:
-            mSprite.setColor(adjustColorIntensity(sf::Color(160, 162, 143), brightness));  // Make grass color 20% brighter
+            mSprite.setColor(adjustColorIntensity(sf::Color(145, 145, 141), brightness));  // Make grass color 20% brighter
             break;
         case TileType::Default:
         default:
