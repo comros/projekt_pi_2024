@@ -14,10 +14,36 @@ public:
         Default
     };
 
+    bool isLowerLayerThan(TileType otherType) const {
+        // Define hierarchy for layering (lowest to highest)
+        static const std::vector<TileType> hierarchy = {
+            TileType::DeepWater,
+            TileType::ShallowWater,
+            TileType::NormalSand,
+            TileType::NormalGrass,
+            TileType::Mountain
+        };
+
+        auto currentPos = std::find(hierarchy.begin(), hierarchy.end(), mType);
+        auto otherPos = std::find(hierarchy.begin(), hierarchy.end(), otherType);
+
+        return currentPos < otherPos; // Compare based on hierarchy
+    }
+
+    // Get bounding rectangle for sprite
+    sf::FloatRect getBounds() const {
+        return mSprite.getGlobalBounds();
+    }
+
 private:
     sf::Sprite mSprite;
     TileType mType;
     sf::Texture mTextureAtlas;
+    sf::Texture mDeepWaterVarietyAtlas;
+    sf::Texture mShallowWaterVarietyAtlas;
+    sf::Texture mSandVarietyAtlas;
+    sf::Texture mGrassVarietyAtlas;
+    sf::Texture mMountainVarietyAtlas;
 
     float brightness = 1.1f;
 
@@ -31,6 +57,7 @@ public:
         // Default tile (12th tile in 4x4 grid) at (0, 48) with 16x16 size
         // mSprite.setTextureRect(sf::IntRect(0, 48, 16, 16));
         mSprite.setTextureRect(sf::IntRect(32, 16, 16, 16));
+        texture.setSmooth(false);
     }
 
     // Set the tile type and color the sprite
@@ -59,6 +86,16 @@ public:
             mSprite.setColor(sf::Color::White); // Default tile color
             break;
         }
+    }
+
+    // Randomize the texture within the given grid (ncols x nrows)
+    void randomizeTexture(int ncols, int nrows) {
+        // Generate random indices for selecting tile from the atlas
+        int randomCol = rand() % ncols;
+        int randomRow = rand() % nrows;
+
+        // Set the texture rect to randomly pick a tile from the atlas
+        mSprite.setTextureRect(sf::IntRect(randomCol * 16, randomRow * 16, 16, 16));
     }
 
     // Get the current tile type

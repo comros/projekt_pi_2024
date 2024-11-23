@@ -15,7 +15,7 @@ Game::Game()
     backgroundMusic.openFromFile(BACKGROUND_MUSIC);
     backgroundMusic.setLoop(true);
     backgroundMusic.play();
-    backgroundMusic.setVolume(10);
+    backgroundMusic.setVolume(0);
 }
 
 Game::~Game()

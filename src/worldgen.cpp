@@ -98,14 +98,44 @@ void WorldGen::generateMap() {
 int WorldGen::calculateBitmask(int x, int y, Tile::TileType type) const {
     int bitmask = 0;
 
-    // Check neighbors (T, R, B, L)
+    // Check neighbors (Top, Right, Bottom, Left)
     if (y > 0 && mTiles[y - 1][x].getType() == type) bitmask |= 1 << 0; // Top
     if (x < mWidth - 1 && mTiles[y][x + 1].getType() == type) bitmask |= 1 << 1; // Right
     if (y < mHeight - 1 && mTiles[y + 1][x].getType() == type) bitmask |= 1 << 2; // Bottom
     if (x > 0 && mTiles[y][x - 1].getType() == type) bitmask |= 1 << 3; // Left
 
+    // Check for neighboring tiles of a higher priority
+    static const std::vector<Tile::TileType> priorityOrder = {
+        Tile::TileType::DeepWater,
+        Tile::TileType::ShallowWater,
+        Tile::TileType::NormalSand,
+        Tile::TileType::NormalGrass,
+        Tile::TileType::Mountain
+    };
+
+    auto currentPriority = std::find(priorityOrder.begin(), priorityOrder.end(), type);
+
+    // Iterate over neighbors to find higher-priority tiles
+    for (int dy = -1; dy <= 1; ++dy) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            int nx = x + dx;
+            int ny = y + dy;
+
+            if ((dx != 0 || dy != 0) && nx >= 0 && nx < (int)mWidth && ny >= 0 && ny < (int)mHeight) {
+                auto neighborType = mTiles[ny][nx].getType();
+                auto neighborPriority = std::find(priorityOrder.begin(), priorityOrder.end(), neighborType);
+
+                // If a neighbor is of higher priority, force the bitmask to 15
+                if (neighborPriority > currentPriority) {
+                    return 15; // Force to "full connection"
+                }
+            }
+        }
+    }
+
     return bitmask;
 }
+
 
 
 // Precomputes a falloff effect based on the distance from the map's center
@@ -148,7 +178,7 @@ void WorldGen::precomputeNoise(int mapWidth, int mapHeight, int tileSize) {
     }
 }
 
-// Renders the tiles that are visible within the current view of the window
+// Renders only the visible tiles within the current view of the window
 void WorldGen::render(sf::RenderWindow& window) {
     // Get the view's visible bounds
     sf::View view = window.getView();
@@ -166,10 +196,59 @@ void WorldGen::render(sf::RenderWindow& window) {
     // Render only the visible tiles
     for (int y = startY; y < endY; ++y) {
         for (int x = startX; x < endX; ++x) {
-            window.draw(mTiles[y][x].getSprite());
+            Tile& currentTile = mTiles[y][x];
+
+            // Calculate the bitmask for the current tile
+            int bitmask = 0;
+
+            // Check top neighbor
+            if (y > 0 && mTiles[y - 1][x].getType() == currentTile.getType()) {
+                bitmask |= 1; // Top
+            }
+
+            // Check right neighbor
+            if (x < static_cast<int>(mWidth) - 1 && mTiles[y][x + 1].getType() == currentTile.getType()) {
+                bitmask |= 2; // Right
+            }
+
+            // Check bottom neighbor
+            if (y < static_cast<int>(mHeight) - 1 && mTiles[y + 1][x].getType() == currentTile.getType()) {
+                bitmask |= 4; // Bottom
+            }
+
+            // Check left neighbor
+            if (x > 0 && mTiles[y][x - 1].getType() == currentTile.getType()) {
+                bitmask |= 8; // Left
+            }
+
+            // Render an underlying tile if the bitmask indicates neighbors are different
+            if (bitmask != 15) { // Not all neighbors are the same
+                for (int i = 0; i < 4; ++i) {
+                    int dx = (i == 1) - (i == 3); // Right (+1) or Left (-1)
+                    int dy = (i == 2) - (i == 0); // Bottom (+1) or Top (-1)
+
+                    int nx = x + dx;
+                    int ny = y + dy;
+
+                    if (nx >= 0 && nx < static_cast<int>(mWidth) && ny >= 0 && ny < static_cast<int>(mHeight)) {
+                        Tile& neighborTile = mTiles[ny][nx];
+
+                        if (neighborTile.getType() != currentTile.getType() &&
+                            neighborTile.isLowerLayerThan(currentTile.getType())) {
+                            sf::Sprite underlyingSprite = neighborTile.getSprite();
+                            underlyingSprite.setPosition(currentTile.getSprite().getPosition());
+                            window.draw(underlyingSprite);
+                        }
+                    }
+                }
+            }
+
+            // Render the current tile
+            window.draw(currentTile.getSprite());
         }
     }
 }
+
 
 // Alternative simple rendering (less efficient but simpler) - renders all tiles at once
 // void WorldGen::render(sf::RenderWindow& window) { for (const auto& tile : mTiles) window.draw(tile); }
