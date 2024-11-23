@@ -16,7 +16,7 @@
 #define PLAYER_WALK_ATLAS "../../assets/player/Walk/walk.png"
 #define PLAYER_IDLE_ATLAS "../../assets/player/Idle/idle.png"
 
-#define TERRAIN_ATLAS "../../assets/terrain/test_tilemap.png"
+#define TERRAIN_ATLAS "../../assets/terrain/terrain_bitmasked.png"
 
 #define BACKGROUND_MUSIC "../../assets/sound/Background2.mp3"
 #define WALKSOUND "../../assets/sound/WalkSound3.ogg"

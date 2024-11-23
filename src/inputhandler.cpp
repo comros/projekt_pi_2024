@@ -16,7 +16,7 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) &&
         event.type == sf::Event::MouseWheelMoved &&
         player.getZoomFactor() - 0.05f * static_cast<float>(event.mouseWheel.delta) > 0 &&
-        player.getZoomFactor() - 0.05f * static_cast<float>(event.mouseWheel.delta) < 1) {
+        player.getZoomFactor() - 0.05f * static_cast<float>(event.mouseWheel.delta) < 5) {
         player.setZoomFactor(0.05f * static_cast<float>(event.mouseWheel.delta));
         }
 

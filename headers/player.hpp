@@ -49,6 +49,8 @@ public:
 
     void setEffectsVolume(const float volume) { mSoundEffects.setGlobalVolume(volume); };
 
+    sf::View getCamera() const { return mView; }
+
 private:
     void checkBounds();
     void animate(float deltaTime);
@@ -57,7 +59,7 @@ private:
 
 
     sf::Sprite mSprite;
-    sf::Vector2f mPosition = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
+    sf::Vector2f mPosition = {256*16, 256*16}; // Middle of the map (if map is 256x256 and tiles are 16x16)
     sf::Vector2f mDirection;
     sf::Vector2f mVelocity;
     sf::View mView;
