@@ -79,7 +79,7 @@ public:
             mSprite.setColor(adjustColorIntensity(sf::Color(97, 120, 66), brightness));  // Make grass color 20% brighter
             break;
         case TileType::Mountain:
-            mSprite.setColor(adjustColorIntensity(sf::Color(145, 145, 141), brightness));  // Make grass color 20% brighter
+            mSprite.setColor(adjustColorIntensity(sf::Color(255,255,228), brightness));  // Make grass color 20% brighter
             break;
         case TileType::Default:
         default:
