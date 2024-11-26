@@ -136,6 +136,13 @@ int WorldGen::calculateBitmask(int x, int y, Tile::TileType type) const {
     return bitmask;
 }
 
+void WorldGen::updateTileBrightness(float brightness) {
+    for (auto& row : mTiles) {
+        for (auto& tile : row) {
+            tile.setBrightness(brightness);
+        }
+    }
+}
 
 
 // Precomputes a falloff effect based on the distance from the map's center

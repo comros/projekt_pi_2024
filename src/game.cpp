@@ -64,6 +64,18 @@ void Game::update(const float deltaTime)
 
     mPlayer.updatePosition(deltaTime);
     mPlayer.updateCamera(mWindow);
+
+    // Update in-game time
+    mCurrentTime += (deltaTime / realDayDuration) * inGameDayDuration; // Advance in-game time
+    if (mCurrentTime >= inGameDayDuration) {
+        mCurrentTime -= inGameDayDuration; // Reset to the next day
+    }
+
+    // Calculate brightness based on time
+    float brightness = calculateBrightness(mCurrentTime);
+
+    // Update tile brightness in the world
+    mWorldGen.updateTileBrightness(brightness);
 }
 
 
@@ -116,6 +128,11 @@ void Game::imgui(const float deltaTime, Player& player)
     // Sliders for controlling the seeds
     ImGui::Text("Seeds:");
     ImGui::InputInt("Terrain Seed", &mWorldGen.mTerrainSeed);
+
+    // Display in-game time
+    int inGameHour = static_cast<int>(mCurrentTime);
+    int inGameMinutes = static_cast<int>((mCurrentTime - inGameHour) * 60);
+    ImGui::Text("In-Game Time: %02d:%02d", inGameHour, inGameMinutes);
 
     // Sliders for world generation parameters
     ImGui::Text("Noise Parameters:");

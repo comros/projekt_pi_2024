@@ -30,6 +30,8 @@ public:
     // Tile rendering method
     void render(sf::RenderWindow& window);
 
+    void updateTileBrightness(float brightness);
+
 private:
     // Dimensions of the world map
     unsigned int mWidth, mHeight;
