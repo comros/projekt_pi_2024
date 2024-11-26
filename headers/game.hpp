@@ -20,6 +20,7 @@ private:
     void generateMap();
     void render(float deltaTime);
     void imgui(float deltaTime, Player& player); // ImGui
+    void handleTileClick(int mouseX, int mouseY);
 
 
     sf::Music backgroundMusic;

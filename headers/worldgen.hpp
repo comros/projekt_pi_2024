@@ -23,6 +23,32 @@ public:
 
     WorldGen(unsigned int width, unsigned int height, unsigned int terrainSeed);
 
+    // Helper methods to directly access tiles by coordinates
+    Tile& getTile(unsigned int x, unsigned int y);
+    const Tile& getTile(unsigned int x, unsigned int y) const;
+
+    // Methods to modify tile properties
+    void setTileType(unsigned int x, unsigned int y, Tile::TileType type);
+    void setTileBrightness(unsigned int x, unsigned int y, float brightness);
+
+    // Get a reference to a tile at a specific position (x, y)
+    Tile& getTileAt(int x, int y) {
+        if (x >= 0 && x < static_cast<int>(mWidth) && y >= 0 && y < static_cast<int>(mHeight)) {
+            return mTiles[y][x];
+        } else {
+            throw std::out_of_range("Coordinates out of map bounds");
+        }
+    }
+
+    // Get the position of a tile at specific coordinates (x, y)
+    sf::Vector2f getTilePosition(int x, int y) const {
+        if (x >= 0 && x < static_cast<int>(mWidth) && y >= 0 && y < static_cast<int>(mHeight)) {
+            return mTiles[y][x].getPosition();
+        } else {
+            throw std::out_of_range("Coordinates out of map bounds");
+        }
+    }
+
     // Main map generation method
     void generateMap();
     int calculateBitmask(int x, int y, Tile::TileType type) const;

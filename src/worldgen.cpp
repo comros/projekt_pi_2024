@@ -73,11 +73,11 @@ void WorldGen::generateMap() {
             } else if (terrainValue < thresholdShallowWater) {
                 tileType = Tile::TileType::ShallowWater;
             } else if (terrainValue < thresholdSand) {
-                    tileType = Tile::TileType::NormalSand;
+                    tileType = Tile::TileType::Sand;
             } else if (terrainValue < thresholdGrass) {
-                    tileType = Tile::TileType::NormalGrass;
+                    tileType = Tile::TileType::Grass;
             } else {
-                    tileType = Tile::TileType::Mountain;
+                    tileType = Tile::TileType::Rock;
             }
 
             // Use this texture in your Tile objects
@@ -108,9 +108,9 @@ int WorldGen::calculateBitmask(int x, int y, Tile::TileType type) const {
     static const std::vector<Tile::TileType> priorityOrder = {
         Tile::TileType::DeepWater,
         Tile::TileType::ShallowWater,
-        Tile::TileType::NormalSand,
-        Tile::TileType::NormalGrass,
-        Tile::TileType::Mountain
+        Tile::TileType::Sand,
+        Tile::TileType::Grass,
+        Tile::TileType::Rock
     };
 
     auto currentPriority = std::find(priorityOrder.begin(), priorityOrder.end(), type);
@@ -254,6 +254,39 @@ void WorldGen::render(sf::RenderWindow& window) {
             window.draw(currentTile.getSprite());
         }
     }
+}
+
+// Get a reference to a specific tile (non-const and const versions)
+Tile& WorldGen::getTile(unsigned int x, unsigned int y) {
+    if (x < mWidth && y < mHeight) {
+        return mTiles[y][x];
+    }
+    // Handle out-of-bounds access if needed
+    throw std::out_of_range("Tile coordinates are out of bounds.");
+}
+
+const Tile& WorldGen::getTile(unsigned int x, unsigned int y) const {
+    if (x < mWidth && y < mHeight) {
+        return mTiles[y][x];
+    }
+    // Handle out-of-bounds access if needed
+    throw std::out_of_range("Tile coordinates are out of bounds.");
+}
+
+// Set the tile type at a specific position
+void WorldGen::setTileType(unsigned int x, unsigned int y, Tile::TileType type) {
+    if (x < mWidth && y < mHeight) {
+        mTiles[y][x].setType(type);
+    }
+    // Handle out-of-bounds access if needed
+}
+
+// Set the tile brightness at a specific position
+void WorldGen::setTileBrightness(unsigned int x, unsigned int y, float brightness) {
+    if (x < mWidth && y < mHeight) {
+        mTiles[y][x].setBrightness(brightness);
+    }
+    // Handle out-of-bounds access if needed
 }
 
 

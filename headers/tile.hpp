@@ -9,9 +9,9 @@ public:
     enum class TileType {
         DeepWater,
         ShallowWater,
-        NormalSand,
-        NormalGrass,
-        Mountain,
+        Sand,
+        Grass,
+        Rock,
         Default
     };
 
@@ -20,9 +20,9 @@ public:
         static const std::vector<TileType> hierarchy = {
             TileType::DeepWater,
             TileType::ShallowWater,
-            TileType::NormalSand,
-            TileType::NormalGrass,
-            TileType::Mountain
+            TileType::Sand,
+            TileType::Grass,
+            TileType::Rock
         };
 
         auto currentPos = std::find(hierarchy.begin(), hierarchy.end(), mType);
@@ -34,15 +34,6 @@ public:
     // Get bounding rectangle for sprite
     sf::FloatRect getBounds() const {
         return mSprite.getGlobalBounds();
-    }
-
-    float getBrightness() const {return mBrightness;}
-    void setBrightness(float newBrightness)
-    {
-        mBrightness = newBrightness; // Update the brightness value
-
-        // Reapply the current type's color with the new brightness
-        setType(mType); // Reapply color and brightness
     }
 
 private:
@@ -65,8 +56,17 @@ public:
         texture.setSmooth(false);
     }
 
-    // Set the tile type and color the sprite
-    void setType(TileType type) {
+    float getBrightness() const {return mBrightness;}
+    void setBrightness(float newBrightness)
+    {
+        mBrightness = newBrightness; // Update the brightness value
+
+        // Reapply the current type's color with the new brightness
+        setType(mType); // Reapply color and brightness
+    }
+
+    TileType getType() const { return mType; }    // Get the current tile type
+    void setType(TileType type) {                 // Set the tile type and color the sprite
         mType = type;
 
         // Set color based on tile type
@@ -77,13 +77,13 @@ public:
         case TileType::ShallowWater:
             mSprite.setColor(adjustColorIntensity(sf::Color(83, 141, 189), mBrightness));  // Make grass color 20% brighter
             break;
-        case TileType::NormalSand:
+        case TileType::Sand:
             mSprite.setColor(adjustColorIntensity(sf::Color(181, 160, 115), mBrightness));  // Make grass color 20% brighter
             break;
-        case TileType::NormalGrass:
+        case TileType::Grass:
             mSprite.setColor(adjustColorIntensity(sf::Color(97, 120, 66), mBrightness));  // Make grass color 20% brighter
             break;
-        case TileType::Mountain:
+        case TileType::Rock:
             mSprite.setColor(adjustColorIntensity(sf::Color(255,255,228), mBrightness));  // Make grass color 20% brighter
             break;
         case TileType::Default:
@@ -93,19 +93,18 @@ public:
         }
     }
 
-    // Get the current tile type
-    TileType getType() const {
-        return mType;
-    }
-
     // Set position of the tile
-    void setPosition(const sf::Vector2f& position) {
-        mSprite.setPosition(position);
-    }
+    sf::Vector2f getPosition() const { return mSprite.getPosition(); }
+    void setPosition(const sf::Vector2f& position) { mSprite.setPosition(position); }
 
     // Get the sprite for rendering
     const sf::Sprite& getSprite() const {
         return mSprite;
+    }
+
+    // If needed, you can implement a method to print tile info
+    void printInfo() const {
+        std::cout << "Tile Position: (" << mSprite.getPosition().x / 16<< ", " << mSprite.getPosition().y / 16<< ")\n";
     }
 
     // Adjust texture rect based on bitmask
