@@ -113,13 +113,52 @@ void Player::updateCamera(sf::RenderWindow& window)
 {
     mView = window.getDefaultView();
 
+    // Adjust the viewport size by the zoom factor
+    sf::Vector2f viewSize = mView.getSize();
+    sf::Vector2f scaledViewSize = viewSize * mZoomFactor; // Scaled by zoom
+    sf::Vector2f halfViewSize = scaledViewSize / 2.0f;
+
+    // Define world bounds
+    float worldWidth = 512.0f * 16.0f; // Example world width
+    float worldHeight = 512.0f * 16.0f; // Example world height
+
+    // If camera is locked, follow the player
     if (mIsCameraLocked)
     {
-        fixedCameraPosition = mPosition;
-        mView.setCenter(mPosition);
-    }
-    else mView.setCenter(fixedCameraPosition); // Leave's camera in place where player pressed unlock button
+        // Check if zoom is below the threshold for clamping
+        if (mZoomFactor < 3.0f)
+        {
+            sf::Vector2f targetPosition = mPosition;
 
+            // Clamp camera's X position
+            if (mPosition.x - halfViewSize.x < 0)
+                targetPosition.x = halfViewSize.x;
+            else if (mPosition.x + halfViewSize.x > worldWidth)
+                targetPosition.x = worldWidth - halfViewSize.x;
+
+            // Clamp camera's Y position
+            if (mPosition.y - halfViewSize.y < 0)
+                targetPosition.y = halfViewSize.y;
+            else if (mPosition.y + halfViewSize.y > worldHeight)
+                targetPosition.y = worldHeight - halfViewSize.y;
+
+            fixedCameraPosition = targetPosition; // Save clamped position
+        }
+        else
+        {
+            fixedCameraPosition = mPosition; // Follow player without bounds
+        }
+
+        mView.setCenter(fixedCameraPosition); // Set the clamped or free position
+    }
+    else
+    {
+        // Camera is unlocked, stay at the fixed position
+        mView.setCenter(fixedCameraPosition);
+    }
+
+    // Apply zoom and update the window view
     mView.zoom(mZoomFactor);
     window.setView(mView);
 }
+
