@@ -52,7 +52,7 @@ public:
     sf::View getCamera() const { return mView; }
 
 private:
-    void checkBounds();
+    void keepInWorldBounds();
     void animate(float deltaTime);
 
     Audio mSoundEffects;

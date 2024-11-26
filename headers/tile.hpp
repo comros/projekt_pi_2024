@@ -1,6 +1,7 @@
 #ifndef TILE_HPP
 #define TILE_HPP
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 class Tile {
@@ -46,6 +47,7 @@ public:
     // Constructor
     Tile(sf::Texture& texture, const sf::Vector2f& position)
         : mType(TileType::Default) {
+        srand(time(NULL));
         mTextureAtlas.setSmooth(false);
         mSprite.setTexture(texture);
         mSprite.setPosition(position);
@@ -100,19 +102,27 @@ public:
     // Adjust texture rect based on bitmask
     void setTextureByBitmask(int bitmask) {
         int tileSize = 16;
-        int atlasWidth = 4; // 4 tiles per row
+        int atlasWidth = 4; // 4 tiles per row (excluding the column with random variants)
         const int typeIndex = static_cast<int>(mType); // Convert TileType to index (row offset)
+
+        // Lookup table mapping bitmask values to tile IDs
+        // Those correspond to tileAtlas id's, the array position is bitmask value
+        static const int bitmaskToTileID[16] = {12,8,13,9,0,4,1,5,15,11,14,10,3,7,2,6};
+
+        // Get the tile ID from the lookup table
+        int tileID = bitmaskToTileID[bitmask];
 
         int col, row;
 
+        // IMPORTANT, in the random column add 1 pixel length stripe (padding) to prevent texture bleeding
         if (bitmask == 15) {
             // Randomly select a row (0 to 3) in the fifth column (index 4)
-            col = 4; // Fifth column
+            col = 5; // Sixth column
             row = rand() % 4; // Random row (0, 1, 2, 3)
         } else {
             // Calculate the row and column in the grid based on the bitmask
-            row = bitmask / atlasWidth;
-            col = bitmask % atlasWidth;
+            row = tileID / atlasWidth;
+            col = tileID % atlasWidth;
         }
 
         // Offset the row based on the tile type

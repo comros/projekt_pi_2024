@@ -11,7 +11,7 @@ WorldGen::WorldGen(unsigned int width, unsigned int height, unsigned int terrain
     mTerrainValues.resize(height, std::vector<float>(width, 0.0f));
     mMoistureValues.resize(height, std::vector<float>(width, 0.0f));
 
-    if (!mTextureAtlas.loadFromFile("../../assets/terrain/terrain_bitmasked.png")) {
+    if (!mTextureAtlas.loadFromFile(TERRAIN_ATLAS)) {
         // Handle error
     }
     mTextureAtlas.setSmooth(false);

@@ -5,6 +5,7 @@
 #include <vector>
 #include "PerlinNoise.hpp"
 #include "../headers/tile.hpp"
+#include "definitions.hpp"
 #include <random>
 
 class WorldGen {

@@ -90,7 +90,7 @@ void Player::updatePosition(const float deltaTime)
     mPosition.x += mVelocity.x * deltaTime;
     mPosition.y += mVelocity.y * deltaTime;
 
-    // checkBounds();
+    keepInWorldBounds();
 
     animate(deltaTime);
 
@@ -101,12 +101,12 @@ void Player::updatePosition(const float deltaTime)
 // Creating a bounding box so that the sprite won't go outside the screen and instead makes it bounce back
 // Padding is needed due to SFML2 using the (0,0) of the shape as a reference point
 // Adjusting the bounding box size by subtracting the shape's size makes it so the box won't leave the screen
-void Player::checkBounds()
+void Player::keepInWorldBounds()
 {
     if (mPosition.x < PLAYER_PADDING_LEFT) mPosition.x = PLAYER_PADDING_LEFT;
-    if (mPosition.x > WINDOW_WIDTH - PLAYER_PADDING_RIGHT) mPosition.x = WINDOW_WIDTH - PLAYER_PADDING_RIGHT;
+    if (mPosition.x > 512*16 - PLAYER_PADDING_RIGHT) mPosition.x = 512*16 - PLAYER_PADDING_RIGHT;
     if (mPosition.y < PLAYER_PADDING_UP) mPosition.y = PLAYER_PADDING_UP;
-    if (mPosition.y > WINDOW_HEIGHT - PLAYER_PADDING_DOWN) mPosition.y = WINDOW_HEIGHT - PLAYER_PADDING_DOWN;
+    if (mPosition.y > 512*16 - PLAYER_PADDING_DOWN) mPosition.y = 512*16 - PLAYER_PADDING_DOWN;
 }
 
 void Player::updateCamera(sf::RenderWindow& window)

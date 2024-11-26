@@ -70,7 +70,7 @@ void Game::update(const float deltaTime)
 void Game::render(float deltaTime) {
 
     // Clear and render the window contents
-    mWindow.clear(sf::Color(0,0,0,255));
+    mWindow.clear(sf::Color(255,255,255,255));
 
     mWorldGen.render(mWindow);
 

@@ -48,16 +48,13 @@ add_executable(main src/main.cpp
         headers/game.hpp
         src/player.cpp
         headers/player.hpp
-        headers/definitions.hpp
         src/inputhandler.cpp
         headers/inputhandler.hpp
         headers/audio.hpp
         src/audio.cpp
-        headers/worldgen.hpp
+        src/perlinnoise.cpp
+        src/perlinnoise.cpp
         src/worldgen.cpp
-        src/perlinnoise.cpp
-        src/perlinnoise.cpp
-        headers/tile.hpp
 
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system sfml-main PUBLIC ImGui-SFML::ImGui-SFML)
