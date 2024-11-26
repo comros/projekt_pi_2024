@@ -39,11 +39,6 @@ private:
     sf::Sprite mSprite;
     TileType mType;
     sf::Texture mTextureAtlas;
-    sf::Texture mDeepWaterVarietyAtlas;
-    sf::Texture mShallowWaterVarietyAtlas;
-    sf::Texture mSandVarietyAtlas;
-    sf::Texture mGrassVarietyAtlas;
-    sf::Texture mMountainVarietyAtlas;
 
     float brightness = 1.1f;
 
@@ -51,12 +46,11 @@ public:
     // Constructor
     Tile(sf::Texture& texture, const sf::Vector2f& position)
         : mType(TileType::Default) {
+        mTextureAtlas.setSmooth(false);
         mSprite.setTexture(texture);
         mSprite.setPosition(position);
 
-        // Default tile (12th tile in 4x4 grid) at (0, 48) with 16x16 size
-        // mSprite.setTextureRect(sf::IntRect(0, 48, 16, 16));
-        mSprite.setTextureRect(sf::IntRect(32, 16, 16, 16));
+        mSprite.setTextureRect(sf::IntRect(0, 0, 0, 0));
         texture.setSmooth(false);
     }
 
@@ -88,16 +82,6 @@ public:
         }
     }
 
-    // Randomize the texture within the given grid (ncols x nrows)
-    void randomizeTexture(int ncols, int nrows) {
-        // Generate random indices for selecting tile from the atlas
-        int randomCol = rand() % ncols;
-        int randomRow = rand() % nrows;
-
-        // Set the texture rect to randomly pick a tile from the atlas
-        mSprite.setTextureRect(sf::IntRect(randomCol * 16, randomRow * 16, 16, 16));
-    }
-
     // Get the current tile type
     TileType getType() const {
         return mType;
@@ -117,11 +101,26 @@ public:
     void setTextureByBitmask(int bitmask) {
         int tileSize = 16;
         int atlasWidth = 4; // 4 tiles per row
+        const int typeIndex = static_cast<int>(mType); // Convert TileType to index (row offset)
 
-        int row = bitmask / atlasWidth;
-        int col = bitmask % atlasWidth;
+        int col, row;
 
-        mSprite.setTextureRect(sf::IntRect(col * tileSize, row * tileSize, tileSize, tileSize));
+        if (bitmask == 15) {
+            // Randomly select a row (0 to 3) in the fifth column (index 4)
+            col = 4; // Fifth column
+            row = rand() % 4; // Random row (0, 1, 2, 3)
+        } else {
+            // Calculate the row and column in the grid based on the bitmask
+            row = bitmask / atlasWidth;
+            col = bitmask % atlasWidth;
+        }
+
+        // Offset the row based on the tile type
+        int textureY = (typeIndex * atlasWidth + row) * tileSize;
+        int textureX = col * tileSize;
+
+        // Set the texture rect to the appropriate tile
+        mSprite.setTextureRect(sf::IntRect(textureX, textureY, tileSize, tileSize));
     }
 
     sf::Color adjustColorIntensity(const sf::Color& originalColor, float multiplier) {
