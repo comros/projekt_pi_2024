@@ -14,13 +14,14 @@ public:
     Game();
     ~Game();
     void run();
+    void updateView();
 
 private:
     void processEvents();
     void update(float deltaTime);
     void generateMap();
     void render(float deltaTime);
-    void updateView();
+    void toggleFullscreen();
     void spawnPlayerOnSand();
     void imgui(float deltaTime, Player& player); // ImGui
     void handleTileClick(int mouseX, int mouseY);

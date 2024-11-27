@@ -7,6 +7,10 @@ Game::Game()
 objectManager(mWorldGen)
 {
     mWindow.setFramerateLimit(144);
+    mWindow.setKeyRepeatEnabled(false); // Disable key repeat for F11 fullscreen toggle
+
+    // Set the initial aspect ratio for the view
+    mWindow.setView(sf::View(sf::FloatRect(0.f, 0.f, 16.f * 32.f, 16.f * 32.f))); // 16x16 tile size view
 
     // ImGui init, I cast it to void to get rid of the unused result warning
     (void)ImGui::SFML::Init(mWindow);
@@ -38,21 +42,61 @@ void Game::run() {
         const float deltaTime = mClock.restart().asSeconds();
 
         processEvents();
+        updateView();
         update(deltaTime);
         render(deltaTime);
     }
 
 }
 
-// GUI events has to be in the main thread for best portability
+void Game::updateView() {
+    // Desired aspect ratio of the game world (e.g., 16:9)
+    const float aspectRatio = 16.f / 9.f;
+
+    // Get the current window size
+    const float windowWidth = mWindow.getSize().x;
+    const float windowHeight = mWindow.getSize().y;
+
+    // Calculate the target size for the view, keeping the aspect ratio constant
+    float targetWidth = windowHeight * aspectRatio;
+    float targetHeight = windowWidth / aspectRatio;
+
+    // Create a new view
+    sf::View view;
+
+    if (windowWidth > windowHeight * aspectRatio) {
+        // Window is too wide (letterbox effect)
+        view.setSize(targetWidth, windowHeight); // Set the width to maintain aspect ratio
+        view.setCenter(windowWidth / 2.f, windowHeight / 2.f); // Center the view horizontally
+    } else {
+        // Window is too tall (pillarbox effect)
+        view.setSize(windowWidth, targetHeight); // Set the height to maintain aspect ratio
+        view.setCenter(windowWidth / 2.f, windowHeight / 2.f); // Center the view vertically
+    }
+
+    // Set the view to the window
+    mWindow.setView(view);
+}
+
+void Game::toggleFullscreen() {
+    static bool isFullscreen = false;
+
+    if (isFullscreen) {
+        // Switch to windowed mode
+        mWindow.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Projekt pi 2024", sf::Style::Default);
+    } else {
+        // Switch to fullscreen mode
+        mWindow.create(sf::VideoMode::getDesktopMode(), "Projekt pi 2024", sf::Style::Fullscreen);
+    }
+
+    // Toggle the fullscreen flag
+    isFullscreen = !isFullscreen;
+}
+
 void Game::processEvents() {
     sf::Event event{};
-    while (mWindow.pollEvent(event) && mWindow.hasFocus()) {
+    while (mWindow.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(mWindow, event);
-
-        if (event.type == sf::Event::Resized) {
-            updateView();  // Update the view when the window is resized
-        }
 
         mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager);
 
@@ -61,6 +105,18 @@ void Game::processEvents() {
                 handleTileClick(event.mouseButton.x, event.mouseButton.y);
             }
         }
+
+        // Handle the fullscreen toggle with F11
+        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
+            toggleFullscreen();
+        }
+
+        // Handle resizing while maintaining aspect ratio
+        if (event.type == sf::Event::Resized)
+        {
+            updateView(); // Update the view when the window is resized
+        }
+
         mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager); // Pass ObjectManager
     }
 
@@ -72,8 +128,8 @@ void Game::processEvents() {
     if (event.type == sf::Event::GainedFocus) {
         backgroundMusic.play();
     }
-
 }
+
 
 void Game::update(const float deltaTime)
 {
@@ -101,39 +157,8 @@ void Game::update(const float deltaTime)
 void Game::render(float deltaTime) {
 
     // Clear and render the window contents
-    mWindow.clear(sf::Color(36,126,202,255));
-
-    // Get the window size and the aspect ratio of the game world
-    float windowWidth = mWindow.getSize().x;
-    float windowHeight = mWindow.getSize().y;
-    float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
-
-    // Calculate the target size of the game world
-    float targetWidth = windowHeight * aspectRatio;
-    float targetHeight = windowWidth / aspectRatio;
-
-    // Draw black bars (letterbox or pillarbox) if necessary
-    if (windowWidth > windowHeight * aspectRatio) {
-        // Black bars on the sides (pillarbox)
-        sf::RectangleShape leftBar(sf::Vector2f((windowWidth - targetWidth) / 2, windowHeight));
-        leftBar.setFillColor(sf::Color::Black);
-        mWindow.draw(leftBar);
-
-        sf::RectangleShape rightBar(sf::Vector2f((windowWidth - targetWidth) / 2, windowHeight));
-        rightBar.setFillColor(sf::Color::Black);
-        rightBar.setPosition(targetWidth + (windowWidth - targetWidth) / 2, 0);
-        mWindow.draw(rightBar);
-    } else {
-        // Black bars on the top and bottom (letterbox)
-        sf::RectangleShape topBar(sf::Vector2f(windowWidth, (windowHeight - targetHeight) / 2));
-        topBar.setFillColor(sf::Color::Black);
-        mWindow.draw(topBar);
-
-        sf::RectangleShape bottomBar(sf::Vector2f(windowWidth, (windowHeight - targetHeight) / 2));
-        bottomBar.setFillColor(sf::Color::Black);
-        bottomBar.setPosition(0, targetHeight + (windowHeight - targetHeight) / 2);
-        mWindow.draw(bottomBar);
-    }
+    // mWindow.clear(sf::Color(36,126,202,255));
+    mWindow.clear(sf::Color(02,0,0,255));
 
     mWorldGen.render(mWindow);
 
@@ -174,35 +199,6 @@ void Game::render(float deltaTime) {
 
     mWindow.display();
 }
-
-void Game::updateView() {
-    // Aspect ratio of the original window size (e.g., 16:9)
-    float aspectRatio = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
-
-    // Get the current window size
-    float windowWidth = mWindow.getSize().x;
-    float windowHeight = mWindow.getSize().y;
-
-    // Calculate the target dimensions for the game world to maintain the aspect ratio
-    float targetWidth = windowHeight * aspectRatio;
-    float targetHeight = windowWidth / aspectRatio;
-
-    // Create a new view with the target dimensions
-    sf::View view;
-    if (windowWidth > windowHeight * aspectRatio) {
-        // If the window is too wide, we use the targetHeight and adjust for the black bars
-        view.setSize(targetWidth, windowHeight);
-        view.setCenter(windowWidth / 2, windowHeight / 2);
-    } else {
-        // If the window is too tall, we use the targetWidth and adjust for the black bars
-        view.setSize(windowWidth, targetHeight);
-        view.setCenter(windowWidth / 2, windowHeight / 2);
-    }
-
-    // Apply the view
-    mWindow.setView(view);
-}
-
 
 void Game::imgui(const float deltaTime, Player& player)
 {

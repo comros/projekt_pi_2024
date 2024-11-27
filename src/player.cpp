@@ -209,9 +209,22 @@ void Player::updateCamera(sf::RenderWindow& window)
     sf::Vector2f scaledViewSize = viewSize * mZoomFactor; // Scaled by zoom
     sf::Vector2f halfViewSize = scaledViewSize / 2.0f;
 
+    // Get the window size and calculate the aspect ratio
+    sf::Vector2u windowSize = window.getSize();
+    float aspectRatio = static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
+
     // Define world bounds
     float worldWidth = 512.0f * 16.0f; // Example world width
     float worldHeight = 512.0f * 16.0f; // Example world height
+
+        // Adjust the view based on the aspect ratio
+    if (aspectRatio > 1.0f) {
+        // If the window is wider than the target (landscape mode), adjust the width
+        mView.setSize(worldWidth, worldWidth / aspectRatio);  // Maintain height and adjust width
+    } else {
+        // If the window is taller than the target (portrait mode), adjust the height
+        mView.setSize(worldHeight * aspectRatio, worldHeight);  // Maintain width and adjust height
+    }
 
     // If camera is locked, follow the player
     if (mIsCameraLocked)

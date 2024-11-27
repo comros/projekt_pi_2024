@@ -14,9 +14,9 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     // Camera zoom
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) &&
         event.type == sf::Event::MouseWheelMoved &&
-        player.getZoomFactor() - 0.05f * static_cast<float>(event.mouseWheel.delta) > 0 &&
-        player.getZoomFactor() - 0.05f * static_cast<float>(event.mouseWheel.delta) < 5) {
-        player.setZoomFactor(0.05f * static_cast<float>(event.mouseWheel.delta));
+        player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) > .02f &&
+        player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) < 2) {
+        player.setZoomFactor(0.02f * static_cast<float>(event.mouseWheel.delta));
     }
 
     // Camera lock/unlock
