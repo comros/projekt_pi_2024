@@ -71,10 +71,68 @@ public:
         }
     }
 
-    void renderObjects(sf::RenderWindow& window) {
+    // Separate render functions for each object type
+    void renderRocks(sf::RenderWindow& window) {
         for (const auto& object : mObjects) {
-            window.draw(object->getSprite());
+            if (auto rock = std::dynamic_pointer_cast<Rock>(object)) {
+                window.draw(rock->getSprite()); // Render only rocks
+            }
         }
+    }
+
+    void renderBushes(sf::RenderWindow& window) {
+        for (const auto& object : mObjects) {
+            if (auto bush = std::dynamic_pointer_cast<Bush>(object)) {
+                window.draw(bush->getSprite()); // Render only bushes
+            }
+        }
+    }
+
+    void renderTrees(sf::RenderWindow& window) {
+        for (const auto& object : mObjects) {
+            if (auto tree = std::dynamic_pointer_cast<Tree>(object)) {
+                window.draw(tree->getSprite()); // Render only trees
+            }
+        }
+    }
+
+    void handleObjectClick(const sf::Vector2f& worldPos, const sf::Vector2f& playerPos) {
+        // Iterate through all objects in the container
+        for (auto it = mObjects.begin(); it != mObjects.end(); ) {
+
+            // Skip nullptr objects (objects that have been removed)
+            if (it->get() == nullptr) {
+                it = mObjects.erase(it);  // Remove invalid (nullptr) shared pointers
+                continue;  // Skip to the next iteration
+            }
+
+            // Dereference the shared pointer to access the actual object
+            GameObject& object = *it->get();
+
+            // Check if the player is within the interaction range of the object
+            if (object.getInteractionRange().contains(playerPos)) {
+                // If player is in the interaction range, check if the click position is also inside the range
+                if (object.getInteractionRange().contains(worldPos)) {
+                    // Interact with the object (damage or other effects)
+                    object.interact();
+
+                    // If the object's health is 0 or less, remove it from the container
+                    if (object.getHealth() <= 0) {
+                        it = mObjects.erase(it);  // Erase the object from the container
+                    } else {
+                        ++it;  // Continue to the next object if it is still alive
+                    }
+                    return;  // Only handle one object per click
+                }
+            }
+
+            // Move to the next object if the player isn't in interaction range
+            ++it;
+        }
+    }
+
+    const std::vector<std::shared_ptr<GameObject>>& getObjects() const {
+        return mObjects;
     }
 
 private:

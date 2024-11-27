@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+
+#include "gameobject.hpp"
 #include "../headers/animation.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/audio.hpp"
@@ -28,7 +30,7 @@ enum class PlayerAnimation {
 class Player {
 public:
     Player();
-    void updatePosition(float deltaTime);
+    void updatePosition(float deltaTime, const std::vector<std::shared_ptr<GameObject>>& objects);
     void updateCamera(sf::RenderWindow& window);
 
     // Getters and setters
@@ -50,6 +52,8 @@ public:
     void setEffectsVolume(const float volume) { mSoundEffects.setGlobalVolume(volume); };
 
     sf::View getCamera() const { return mView; }
+
+    void renderBounds(sf::RenderWindow& window);
 
 private:
     void keepInWorldBounds();

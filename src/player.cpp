@@ -2,7 +2,6 @@
 #include <cmath>
 #include <iostream>
 
-#include "../headers/InputHandler.hpp"
 #include "../headers/audio.hpp"
 #include <random>
 
@@ -63,7 +62,34 @@ void Player::animate(float deltaTime)
     mAnimations[static_cast<int>(mCurrentAnimation)].ApplyToSprite(mSprite);
 }
 
-void Player::updatePosition(const float deltaTime)
+void Player::renderBounds(sf::RenderWindow& window) {
+    // Define the square size for the bounding box
+    float squareSize = 1.0f;  // Example square size
+
+    // Calculate the position of the bounding box for the bottom-center square
+    sf::FloatRect playerBounds(
+        mPosition.x - squareSize / 2,  // Center the bounding box horizontally on the player
+        mPosition.y + PLAYER_HEIGHT/5 - squareSize-5,  // Position it at the bottom of the player sprite
+        squareSize+2,  // Set the width of the bounding box
+        squareSize  // Set the height of the bounding box
+    );
+
+    // Create a rectangle shape to visualize the bounding box
+    sf::RectangleShape boundsRect(sf::Vector2f(squareSize+2, squareSize));
+    boundsRect.setPosition(playerBounds.left, playerBounds.top);  // Set the position based on the calculated bounds
+    boundsRect.setFillColor(sf::Color(255, 0, 0, 128));  // Semi-transparent red for visibility
+
+    // Draw the bounding box on the screen
+    window.draw(boundsRect);
+}
+
+
+sf::FloatRect getInteractionRange(const std::shared_ptr<GameObject>& object) {
+    // Use the object's getInteractionRange method to define a proximity box
+    return object->getInteractionRange();
+}
+
+void Player::updatePosition(const float deltaTime, const std::vector<std::shared_ptr<GameObject>>& objects)
 {
 
     if(mDirection.x != 0 || mDirection.y != 0) mSoundEffects.playSound("Walk"); //Starts playing walking sound
@@ -84,17 +110,45 @@ void Player::updatePosition(const float deltaTime)
         normalizedDirection.y /= vectorLength;
     }
 
+    // Calculate potential new position
+
     // Setting the velocity and position accordingly
     mVelocity.x = mSpeed * normalizedDirection.x;
-    mVelocity.y = mSpeed * -normalizedDirection.y; // Because SFML's graphic library positive y-axis points downwards
-    mPosition.x += mVelocity.x * deltaTime;
-    mPosition.y += mVelocity.y * deltaTime;
+    mVelocity.y = mSpeed * -normalizedDirection.y; // Because SFML's graphic library positive y-axis points downward
+
+    sf::Vector2f newPosition = mPosition + mVelocity * deltaTime;
+
+    // Create a bounding box for the player's new position, adjusted for sprite padding
+    float squareSize = 1.0f;  // Same square size as before
+    sf::FloatRect playerBounds(
+        newPosition.x - squareSize / 2,  // Center the bounding box horizontally on the player
+        newPosition.y + PLAYER_HEIGHT / 5 - squareSize - 5,  // Position it at the bottom of the player sprite
+        squareSize+2,  // Set the width of the bounding box
+        squareSize   // Set the height of the bounding box
+    );
+
+
+    // Check for collisions with objects
+    bool collided = false;
+    for (const auto& object : objects) {
+        if (playerBounds.intersects(object->getCollisionBox())) {
+            collided = true;
+            break;
+        }
+
+        if (getInteractionRange(object).contains(mPosition)) {
+            // You can interact with the object, perform actions like damage or interaction here
+            // std::cout << "Player is near the object, ready to interact!" << std::endl;
+        }
+    }
+
+    // Only update position if no collision occurred
+    if (!collided) {
+        mPosition = newPosition;
+    }
 
     keepInWorldBounds();
-
     animate(deltaTime);
-
-    // Updating position
     mSprite.setPosition(mPosition);
 }
 

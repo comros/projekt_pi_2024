@@ -47,13 +47,14 @@ void Game::processEvents() {
     sf::Event event{};
     while (mWindow.pollEvent(event) && mWindow.hasFocus()) {
         ImGui::SFML::ProcessEvent(mWindow, event);
-        mInputHandler.handleEvent(event, mWindow, mPlayer);
+        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager);
 
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Right) {
                 handleTileClick(event.mouseButton.x, event.mouseButton.y);
             }
         }
+        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager); // Pass ObjectManager
     }
 
     // Pause the music when window lost focus
@@ -71,7 +72,7 @@ void Game::update(const float deltaTime)
 {
     if(mWindow.hasFocus()) mPlayer.setDirection(InputHandler::getPlayerDirection());
 
-    mPlayer.updatePosition(deltaTime);
+    mPlayer.updatePosition(deltaTime, objectManager.getObjects());
     mPlayer.updateCamera(mWindow);
 
     // Update in-game time
@@ -95,9 +96,37 @@ void Game::render(float deltaTime) {
 
     mWorldGen.render(mWindow);
 
-    objectManager.renderObjects(mWindow);
+    objectManager.renderRocks(mWindow);
+    objectManager.renderBushes(mWindow);
+
+    for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
+        Tree* tree = dynamic_cast<Tree*>(object.get()); // Cast to Tree* (non-const version)
+
+        if (tree) {
+            if (!tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
+                tree->setSpriteColor(sf::Color(255,255,255,255));
+                // If the tree is not in range, render it on behind of the player
+                mWindow.draw(tree->getSprite());
+            }
+        }
+    }
 
     mWindow.draw(mPlayer.getSprite());
+
+    for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
+        Tree* tree = dynamic_cast<Tree*>(object.get()); // Cast to Tree* (non-const version)
+
+        if (tree) {
+            if (tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
+                tree->setSpriteColor(sf::Color(255,255,255,128));
+                // If the tree is in range, render it on top of the player
+                mWindow.draw(tree->getSprite());
+            }
+        }
+    }
+
+
+    mPlayer.renderBounds(mWindow);
 
     // ImGui rendering
     imgui(deltaTime, mPlayer);
