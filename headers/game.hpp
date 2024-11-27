@@ -7,6 +7,7 @@
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/worldgen.hpp"
+#include "../headers/ObjectManager.hpp"
 
 class Game {
 public:
@@ -32,6 +33,7 @@ private:
     Player mPlayer;
 
     WorldGen mWorldGen;
+    ObjectManager objectManager;
 
     // Day and night cycle
     float mCurrentTime = 12.0f; // Start at 12:00 in-game time (midday)

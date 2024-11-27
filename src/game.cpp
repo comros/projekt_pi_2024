@@ -2,9 +2,9 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
-
 Game::Game()
-: mWorldGen(512, 512, std::random_device{}())
+: mWorldGen(512, 512, std::random_device{}()),
+objectManager(mWorldGen)
 {
     mWindow.setFramerateLimit(144);
 
@@ -16,6 +16,9 @@ Game::Game()
     backgroundMusic.setLoop(true);
     backgroundMusic.play();
     backgroundMusic.setVolume(0);
+
+    objectManager.loadTextures();
+    objectManager.spawnObjects({512, 512}); // Spawn objects on valid tiles
 }
 
 Game::~Game()
@@ -47,7 +50,7 @@ void Game::processEvents() {
         mInputHandler.handleEvent(event, mWindow, mPlayer);
 
         if (event.type == sf::Event::MouseButtonPressed) {
-            if (event.mouseButton.button == sf::Mouse::Left) {
+            if (event.mouseButton.button == sf::Mouse::Right) {
                 handleTileClick(event.mouseButton.x, event.mouseButton.y);
             }
         }
@@ -92,6 +95,8 @@ void Game::render(float deltaTime) {
 
     mWorldGen.render(mWindow);
 
+    objectManager.renderObjects(mWindow);
+
     mWindow.draw(mPlayer.getSprite());
 
     // ImGui rendering
@@ -112,7 +117,7 @@ void Game::imgui(const float deltaTime, Player& player)
     ImGui::Begin("Player");
 
     ImGui::Text("FPS: %.0f", fps);
-    ImGui::Text("x: %g, y: %g", player.getPosition().x, player.getPosition().y);
+    ImGui::Text("x: %g, y: %g", player.getPosition().x / 16, player.getPosition().y / 16);
 
     // Player speed slider
     ImGui::SliderFloat("Speed", &playerSpeed, 0.0f, 1000.0f);
