@@ -231,6 +231,15 @@ public:
         mObjects.clear(); // Clear the vector of objects
     }
 
+    void adjustObjectBrightness(float brightness) {
+        for (auto& object : mObjects) {
+            if (object) {
+                // Assuming all objects have a method to set their sprite color
+                object->setSpriteColor(sf::Color(255, 255, 255, 255), brightness); // Adjust brightness by changing RGB values
+            }
+        }
+    }
+
 private:
     void spawnRock(const sf::Vector2f& position) {
         std::shared_ptr<GameObject> object = std::make_shared<Rock>(position, mTextures["Rock"]);

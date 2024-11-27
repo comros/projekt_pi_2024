@@ -88,6 +88,8 @@ void Game::update(const float deltaTime)
 
     // Update tile brightness in the world
     mWorldGen.updateTileBrightness(brightness);
+    objectManager.adjustObjectBrightness(brightness);
+    mPlayer.adjustPlayerBrightness(brightness);
 }
 
 
@@ -106,7 +108,7 @@ void Game::render(float deltaTime) {
 
         if (tree) {
             if (!tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->setSpriteColor(sf::Color(255,255,255,255));
+                tree->setSpriteColor(sf::Color(255,255,255,255), 1);
                 // If the tree is not in range, render it on behind of the player
                 mWindow.draw(tree->getSprite());
             }
@@ -120,7 +122,7 @@ void Game::render(float deltaTime) {
 
         if (tree) {
             if (tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->setSpriteColor(sf::Color(255,255,255,128));
+                tree->setSpriteColor(sf::Color(255,255,255,128), 1);
                 // If the tree is in range, render it on top of the player
                 mWindow.draw(tree->getSprite());
             }

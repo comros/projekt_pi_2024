@@ -20,8 +20,16 @@ public:
     const sf::Sprite& getSprite() const { return mSprite; }
 
     // Method to change sprite color using RGBA
-    void setSpriteColor(const sf::Color& color) {
-        mSprite.setColor(color);  // Set the color (RGBA) of the sprite
+    void setSpriteColor(const sf::Color& color, float brightness) {
+        mSprite.setColor(adjustColorIntensity(color, brightness));  // Set the color (RGBA) of the sprite
+    }
+
+    sf::Color adjustColorIntensity(const sf::Color& originalColor, float multiplier) {
+        return sf::Color(
+            std::min(static_cast<int>(originalColor.r * multiplier), 255),
+            std::min(static_cast<int>(originalColor.g * multiplier), 255),
+            std::min(static_cast<int>(originalColor.b * multiplier), 255)
+        );
     }
 
     // Get position method

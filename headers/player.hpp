@@ -55,6 +55,11 @@ public:
 
     void renderBounds(sf::RenderWindow& window);
 
+    // Method to change sprite color using RGBA
+    void adjustPlayerBrightness(float brightness) {
+        mSprite.setColor(adjustColorIntensity(sf::Color(255,255,255,255), brightness));  // Set the color (RGBA) of the sprite
+    }
+
 private:
     void keepInWorldBounds();
     void animate(float deltaTime);
@@ -75,6 +80,14 @@ private:
     // Making an array of animations (default constructor is needed)
     Animation mAnimations[static_cast<int>(PlayerAnimation::Count)];
     PlayerAnimation mCurrentAnimation = {PlayerAnimation::IdleDown};
+
+    sf::Color adjustColorIntensity(const sf::Color& originalColor, float multiplier) {
+        return sf::Color(
+            std::min(static_cast<int>(originalColor.r * multiplier), 255),
+            std::min(static_cast<int>(originalColor.g * multiplier), 255),
+            std::min(static_cast<int>(originalColor.b * multiplier), 255)
+        );
+    }
 
 };
 
