@@ -20,6 +20,7 @@ private:
     void update(float deltaTime);
     void generateMap();
     void render(float deltaTime);
+    void updateView();
     void spawnPlayerOnSand();
     void imgui(float deltaTime, Player& player); // ImGui
     void handleTileClick(int mouseX, int mouseY);

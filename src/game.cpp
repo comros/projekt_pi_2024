@@ -49,6 +49,11 @@ void Game::processEvents() {
     sf::Event event{};
     while (mWindow.pollEvent(event) && mWindow.hasFocus()) {
         ImGui::SFML::ProcessEvent(mWindow, event);
+
+        if (event.type == sf::Event::Resized) {
+            updateView();  // Update the view when the window is resized
+        }
+
         mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager);
 
         if (event.type == sf::Event::MouseButtonPressed) {
@@ -98,6 +103,38 @@ void Game::render(float deltaTime) {
     // Clear and render the window contents
     mWindow.clear(sf::Color(36,126,202,255));
 
+    // Get the window size and the aspect ratio of the game world
+    float windowWidth = mWindow.getSize().x;
+    float windowHeight = mWindow.getSize().y;
+    float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+
+    // Calculate the target size of the game world
+    float targetWidth = windowHeight * aspectRatio;
+    float targetHeight = windowWidth / aspectRatio;
+
+    // Draw black bars (letterbox or pillarbox) if necessary
+    if (windowWidth > windowHeight * aspectRatio) {
+        // Black bars on the sides (pillarbox)
+        sf::RectangleShape leftBar(sf::Vector2f((windowWidth - targetWidth) / 2, windowHeight));
+        leftBar.setFillColor(sf::Color::Black);
+        mWindow.draw(leftBar);
+
+        sf::RectangleShape rightBar(sf::Vector2f((windowWidth - targetWidth) / 2, windowHeight));
+        rightBar.setFillColor(sf::Color::Black);
+        rightBar.setPosition(targetWidth + (windowWidth - targetWidth) / 2, 0);
+        mWindow.draw(rightBar);
+    } else {
+        // Black bars on the top and bottom (letterbox)
+        sf::RectangleShape topBar(sf::Vector2f(windowWidth, (windowHeight - targetHeight) / 2));
+        topBar.setFillColor(sf::Color::Black);
+        mWindow.draw(topBar);
+
+        sf::RectangleShape bottomBar(sf::Vector2f(windowWidth, (windowHeight - targetHeight) / 2));
+        bottomBar.setFillColor(sf::Color::Black);
+        bottomBar.setPosition(0, targetHeight + (windowHeight - targetHeight) / 2);
+        mWindow.draw(bottomBar);
+    }
+
     mWorldGen.render(mWindow);
 
     objectManager.renderRocks(mWindow);
@@ -136,6 +173,34 @@ void Game::render(float deltaTime) {
     imgui(deltaTime, mPlayer);
 
     mWindow.display();
+}
+
+void Game::updateView() {
+    // Aspect ratio of the original window size (e.g., 16:9)
+    float aspectRatio = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
+
+    // Get the current window size
+    float windowWidth = mWindow.getSize().x;
+    float windowHeight = mWindow.getSize().y;
+
+    // Calculate the target dimensions for the game world to maintain the aspect ratio
+    float targetWidth = windowHeight * aspectRatio;
+    float targetHeight = windowWidth / aspectRatio;
+
+    // Create a new view with the target dimensions
+    sf::View view;
+    if (windowWidth > windowHeight * aspectRatio) {
+        // If the window is too wide, we use the targetHeight and adjust for the black bars
+        view.setSize(targetWidth, windowHeight);
+        view.setCenter(windowWidth / 2, windowHeight / 2);
+    } else {
+        // If the window is too tall, we use the targetWidth and adjust for the black bars
+        view.setSize(windowWidth, targetHeight);
+        view.setCenter(windowWidth / 2, windowHeight / 2);
+    }
+
+    // Apply the view
+    mWindow.setView(view);
 }
 
 
