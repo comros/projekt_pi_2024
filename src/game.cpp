@@ -108,7 +108,7 @@ void Game::render(float deltaTime) {
 
         if (tree) {
             if (!tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->setSpriteColor(sf::Color(255,255,255,255), 1);
+                tree->adjustAlpha(1.f);
                 // If the tree is not in range, render it on behind of the player
                 mWindow.draw(tree->getSprite());
             }
@@ -122,7 +122,7 @@ void Game::render(float deltaTime) {
 
         if (tree) {
             if (tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->setSpriteColor(sf::Color(255,255,255,128), 1);
+                tree->adjustAlpha(.5f);
                 // If the tree is in range, render it on top of the player
                 mWindow.draw(tree->getSprite());
             }

@@ -235,7 +235,7 @@ public:
         for (auto& object : mObjects) {
             if (object) {
                 // Assuming all objects have a method to set their sprite color
-                object->setSpriteColor(sf::Color(255, 255, 255, 255), brightness); // Adjust brightness by changing RGB values
+                object->setBrightness(sf::Color(255, 255, 255), brightness); // Adjust brightness by changing RGB values
             }
         }
     }

@@ -46,8 +46,8 @@ private:
         float normalizedTime = inGameTime / inGameDayDuration;
 
         // Use a sine wave to simulate brightness: peaks at noon (normalizedTime = 0.5)
-        float brightness = 1.0f + 0.5f * std::sin(2 * M_PI * (normalizedTime - 0.25f)); // Shift by 6 hours for correct phase
-        return std::clamp(brightness, 0.2f, 1.1f); // Clamp brightness to prevent extremes
+        float brightness = 0.1f + 0.5f * std::sin(2 * M_PI * (normalizedTime - 0.25f)) + 0.6f;// Shift by 6 hours for correct phase
+        return std::clamp(brightness, 0.1f, 1.1f); // Clamp brightness to prevent extremes
     }
 };
 

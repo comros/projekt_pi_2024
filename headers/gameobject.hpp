@@ -20,7 +20,19 @@ public:
     const sf::Sprite& getSprite() const { return mSprite; }
 
     // Method to change sprite color using RGBA
-    void setSpriteColor(const sf::Color& color, float brightness) {
+    void adjustAlpha(float alphaMultiplier) {
+        // Get the current color of the sprite
+        sf::Color currentColor = mSprite.getColor();
+
+        // Calculate the new alpha value based on the multiplier
+        int newAlpha = static_cast<int>(currentColor.a * alphaMultiplier);
+        newAlpha = std::clamp(newAlpha, 0, 255);  // Clamp between 0 and 255 to ensure it's valid
+
+        // Set the new color with the same RGB values but updated alpha
+        mSprite.setColor(sf::Color(currentColor.r, currentColor.g, currentColor.b, newAlpha));
+    }
+
+    void setBrightness(const sf::Color& color, float brightness) {
         mSprite.setColor(adjustColorIntensity(color, brightness));  // Set the color (RGBA) of the sprite
     }
 
