@@ -10,6 +10,8 @@
 
 class ObjectManager {
 public:
+    int amountOfObjects = 5000;
+
     // Constructor accepting WorldGen reference
     ObjectManager(WorldGen& worldGen) : mWorldGen(worldGen) {}
 
@@ -70,7 +72,7 @@ public:
         {"Bush", 16.0f}
     };
 
-    for (int i = 0; i < 5000; ++i) { // Example: Spawn 1000 random objects
+    for (int i = 0; i < amountOfObjects; ++i) { // Example: Spawn 1000 random objects
         sf::Vector2f position(distX(gen) * 16, distY(gen) * 16); // 16x16 tiles
         Tile& tile = mWorldGen.getTileAt(position.x / 16, position.y / 16); // Get tile at position
 
@@ -223,6 +225,10 @@ public:
                 return position; // Valid spawn position found
             }
         }
+    }
+
+    void clearObjects() {
+        mObjects.clear(); // Clear the vector of objects
     }
 
 private:

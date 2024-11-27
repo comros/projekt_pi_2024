@@ -163,6 +163,12 @@ void Game::imgui(const float deltaTime, Player& player)
         backgroundMusic.setVolume(musicVolume / 10); // Sets global volume in player
     }
 
+    if (ImGui::Button("Respawn")) {
+        float playerClearanceRadius = 32.0f; // Minimum distance from objects
+        sf::Vector2f playerSpawn = objectManager.findValidPlayerSpawn({512,512}, playerClearanceRadius);
+        player.setPosition(playerSpawn);
+    }
+
     ImGui::End();
 
     ImGui::Begin("World Generation");
@@ -171,6 +177,9 @@ void Game::imgui(const float deltaTime, Player& player)
     // Sliders for controlling the seeds
     ImGui::Text("Seeds:");
     ImGui::InputInt("Terrain Seed", &mWorldGen.mTerrainSeed);
+
+    ImGui::Text("Objects:");
+    ImGui::InputInt("Amount of objects", &objectManager.amountOfObjects);
 
     // Display in-game time
     int inGameHour = static_cast<int>(mCurrentTime);
@@ -193,9 +202,16 @@ void Game::imgui(const float deltaTime, Player& player)
     // Regenerate the map if parameters are updated
     if (ImGui::Button("Regenerate Map")) {
         mWorldGen.generateMap();  // Trigger map regeneration with new parameters
+        objectManager.clearObjects(); // Clear existing objects
+        objectManager.spawnObjects({512, 512}); // Spawn new objects
         float playerClearanceRadius = 32.0f; // Minimum distance from objects
         sf::Vector2f playerSpawn = objectManager.findValidPlayerSpawn({512,512}, playerClearanceRadius);
         player.setPosition(playerSpawn);
+    }
+
+    if (ImGui::Button("Regenerate Objects")) {
+        objectManager.clearObjects(); // Clear existing objects
+        objectManager.spawnObjects({512, 512}); // Spawn new objects
     }
 
     ImGui::End();
