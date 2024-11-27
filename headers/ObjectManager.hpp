@@ -25,45 +25,99 @@ public:
         mTextures["Bush"] = bushTexture;
     }
 
+    const std::unordered_map<Tile::TileType, std::vector<std::pair<std::string, int>>> spawnWeights = {
+        {Tile::TileType::Sand, {{"Rock", 80}, {"Bush", 20}}}, // More rocks, fewer bushes
+        {Tile::TileType::Grass, {{"Tree", 70}, {"Bush", 29}, {"Rock", 1}}}, // Mostly trees, some bushes, few rocks
+        {Tile::TileType::Rock, {{"Rock", 100}}} // Almost exclusively rocks
+    };
+
+    // Distance requirements for each object type
+    const std::unordered_map<std::string, float> minDistances = {
+        {"Tree", 16.0f},
+        {"Rock", 16.0f},
+        {"Bush", 16.0f}
+    };
+
+    std::string getWeightedRandomObject(const std::vector<std::pair<std::string, int>>& weights, std::mt19937& gen) {
+        int totalWeight = 0;
+        for (const auto& pair : weights) {
+            totalWeight += pair.second;
+        }
+
+        std::uniform_int_distribution<> dist(0, totalWeight - 1);
+        int randomValue = dist(gen);
+
+        for (const auto& pair : weights) {
+            if (randomValue < pair.second) {
+                return pair.first;
+            }
+            randomValue -= pair.second;
+        }
+
+        return ""; // Should never reach here
+    }
+
     void spawnObjects(const sf::Vector2i& gridSize) {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> distX(0, gridSize.x - 1);
-        std::uniform_int_distribution<> distY(0, gridSize.y - 1);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distX(0, gridSize.x - 1);
+    std::uniform_int_distribution<> distY(0, gridSize.y - 1);
 
-        for (int i = 0; i < 1000; ++i) { // Example: Spawn 100 random objects
-            sf::Vector2f position(distX(gen) * 16, distY(gen) * 16); // 16x16 tiles
-            Tile& tile = mWorldGen.getTileAt(position.x / 16, position.y / 16); // Get tile at position
+    // Distance requirements for each object type
+    const std::unordered_map<std::string, float> minDistances = {
+        {"Tree", 32.0f},
+        {"Rock", 16.0f},
+        {"Bush", 16.0f}
+    };
 
-            // Now check the tile type to determine what to spawn
-            if (tile.getType() == Tile::TileType::DeepWater || tile.getType() == Tile::TileType::ShallowWater) {
-                // No objects are spawned on DeepWater or ShallowWater
-                i--;
-                continue;
-            }
-            else if (tile.getType() == Tile::TileType::Sand) {
-                // Only spawn rocks on Sand
-                spawnRock(position);
-            }
-            else if (tile.getType() == Tile::TileType::Grass) {
-                // Spawn trees, bushes, or rocks on Grass
-                int objectType = distX(gen) % 3; // Three object types (rock, bush, tree)
-                if (objectType == 0) {
-                    spawnRock(position);
+    for (int i = 0; i < 5000; ++i) { // Example: Spawn 1000 random objects
+        sf::Vector2f position(distX(gen) * 16, distY(gen) * 16); // 16x16 tiles
+        Tile& tile = mWorldGen.getTileAt(position.x / 16, position.y / 16); // Get tile at position
+
+        // Skip invalid tiles
+        if (tile.getType() == Tile::TileType::DeepWater || tile.getType() == Tile::TileType::ShallowWater) {
+            i--;
+            continue;
+        }
+
+        // Determine object type based on weights
+        auto it = spawnWeights.find(tile.getType());
+        if (it == spawnWeights.end()) {
+            continue; // Skip tiles with no defined weights
+        }
+
+        std::string objectType = getWeightedRandomObject(it->second, gen);
+
+        // Check if the spawn position is too close to any existing objects
+        bool tooClose = false;
+        for (const auto& object : mObjects) {
+            if (object) {
+                float distance = std::sqrt(std::pow(position.x - object->getPosition().x, 2) +
+                                           std::pow(position.y - object->getPosition().y, 2));
+                float requiredDistance = minDistances.at(objectType);
+                if (distance < requiredDistance) {
+                    tooClose = true;
+                    break;  // Exit the loop if an object is too close
                 }
-                else if (objectType == 1) {
-                    spawnBush(position);
-                }
-                else {
-                    spawnTree(position);
-                }
-            }
-            else if (tile.getType() == Tile::TileType::Rock) {
-                // Only spawn rocks on Rock tiles
-                spawnRock(position);
             }
         }
+
+        // If the position is too close to any object, skip this spawn attempt
+        if (tooClose) {
+            i--;
+            continue;
+        }
+
+        // Spawn the object
+        if (objectType == "Rock") {
+            spawnRock(position);
+        } else if (objectType == "Bush") {
+            spawnBush(position);
+        } else if (objectType == "Tree") {
+            spawnTree(position);
+        }
     }
+}
 
     void updateObjects() {
         for (const auto& object : mObjects) {
@@ -72,26 +126,27 @@ public:
     }
 
     // Separate render functions for each object type
+    // I render from the end of the Array to keep the proper layering
     void renderRocks(sf::RenderWindow& window) {
-        for (const auto& object : mObjects) {
-            if (auto rock = std::dynamic_pointer_cast<Rock>(object)) {
-                window.draw(rock->getSprite()); // Render only rocks
+        for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
+            if (auto rock = std::dynamic_pointer_cast<Rock>(*it)) {
+                window.draw(rock->getSprite());
             }
         }
     }
 
     void renderBushes(sf::RenderWindow& window) {
-        for (const auto& object : mObjects) {
-            if (auto bush = std::dynamic_pointer_cast<Bush>(object)) {
-                window.draw(bush->getSprite()); // Render only bushes
+        for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
+            if (auto bush = std::dynamic_pointer_cast<Bush>(*it)) {
+                window.draw(bush->getSprite());
             }
         }
     }
 
     void renderTrees(sf::RenderWindow& window) {
-        for (const auto& object : mObjects) {
-            if (auto tree = std::dynamic_pointer_cast<Tree>(object)) {
-                window.draw(tree->getSprite()); // Render only trees
+        for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
+            if (auto tree = std::dynamic_pointer_cast<Tree>(*it)) {
+                window.draw(tree->getSprite());
             }
         }
     }
@@ -112,7 +167,7 @@ public:
             // Check if the player is within the interaction range of the object
             if (object.getInteractionRange().contains(playerPos)) {
                 // If player is in the interaction range, check if the click position is also inside the range
-                if (object.getInteractionRange().contains(worldPos)) {
+                if (object.getCollisionBox().contains(worldPos)) {
                     // Interact with the object (damage or other effects)
                     object.interact();
 
@@ -133,6 +188,41 @@ public:
 
     const std::vector<std::shared_ptr<GameObject>>& getObjects() const {
         return mObjects;
+    }
+
+    bool isPositionOccupied(const sf::Vector2f& position, float radius) const {
+        for (const auto& object : mObjects) {
+            if (object) {
+                float distance = std::sqrt(std::pow(position.x - object->getPosition().x, 2) +
+                                           std::pow(position.y - object->getPosition().y, 2));
+                if (distance < radius) {
+                    return true; // Position is too close to an existing object
+                }
+            }
+        }
+        return false; // Position is clear
+    }
+
+    sf::Vector2f findValidPlayerSpawn(const sf::Vector2i& gridSize, float objectClearanceRadius) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distX(0, gridSize.x - 1);
+        std::uniform_int_distribution<> distY(0, gridSize.y - 1);
+
+        while (true) {
+            sf::Vector2f position(distX(gen) * 16, distY(gen) * 16); // 16x16 tiles
+            Tile& tile = mWorldGen.getTileAt(position.x / 16, position.y / 16);
+
+            // Skip invalid tiles
+            if (tile.getType() != Tile::TileType::Sand) {
+                continue;
+            }
+
+            // Check if the position is clear of objects
+            if (!isPositionOccupied(position, objectClearanceRadius)) {
+                return position; // Valid spawn position found
+            }
+        }
     }
 
 private:

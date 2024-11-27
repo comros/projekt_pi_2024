@@ -8,8 +8,6 @@
 // Setting sprite's starting values
 Player::Player()
 {
-
-    mSprite.setPosition(mPosition);
     mSprite.setOrigin(PLAYER_WIDTH / 2, PLAYER_HEIGHT / 2);
 
     // Initialize animations

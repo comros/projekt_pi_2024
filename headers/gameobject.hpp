@@ -39,9 +39,9 @@ public:
         return sf::FloatRect(bounds.left - 16, bounds.top - 16, bounds.width + 32, bounds.height + 32);
     }
 
-    sf::FloatRect getUpperHalfInteractionRange() const {
+    virtual sf::FloatRect getUpperHalfInteractionRange() const {
         sf::FloatRect bounds = getInteractionRange();
-        return sf::FloatRect(bounds.left , bounds.top , bounds.width, bounds.height / 2);
+        return sf::FloatRect(bounds.left , bounds.top, bounds.width, bounds.height / 2);
     }
 
     bool isInUpperHalfOfInteractionRange(const sf::Vector2f& playerPosition) const {
@@ -82,9 +82,14 @@ public:
     // Override the interaction range (can add different logic in the future)
     sf::FloatRect getInteractionRange() const override {
         sf::FloatRect bounds = getCollisionBox();
-        return sf::FloatRect(bounds.left - 16, bounds.top - 16, bounds.width + 32, bounds.height + 32); // Same for now
+        return sf::FloatRect(bounds.left - 32, bounds.top - 32, bounds.width + 64, bounds.height + 64);
     }
 
+
+    sf::FloatRect getUpperHalfInteractionRange() const override{
+        sf::FloatRect bounds = getInteractionRange();
+        return sf::FloatRect(bounds.left + 24, bounds.top + 8, bounds.width - 48, bounds.height / 2 - 16);
+    }
 };
 
 // Rock subclass
@@ -108,7 +113,7 @@ public:
     // Override the interaction range (can add different logic in the future)
     sf::FloatRect getInteractionRange() const override {
         sf::FloatRect bounds = getCollisionBox();
-        return sf::FloatRect(bounds.left - 16, bounds.top - 16, bounds.width + 32, bounds.height + 32); // Same for now
+        return sf::FloatRect(bounds.left - 16, bounds.top - 16, bounds.width + 32, bounds.height + 32);
     }
 };
 
@@ -133,7 +138,7 @@ public:
     // Override the interaction range (can add different logic in the future)
     sf::FloatRect getInteractionRange() const override {
         sf::FloatRect bounds = getCollisionBox();
-        return sf::FloatRect(bounds.left - 16, bounds.top - 16, bounds.width + 32, bounds.height + 32); // Same for now
+        return sf::FloatRect(bounds.left - 16, bounds.top - 16, bounds.width + 32, bounds.height + 32);
     }
 };
 

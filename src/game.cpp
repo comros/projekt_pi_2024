@@ -19,6 +19,10 @@ objectManager(mWorldGen)
 
     objectManager.loadTextures();
     objectManager.spawnObjects({512, 512}); // Spawn objects on valid tiles
+
+    float playerClearanceRadius = 32.0f; // Minimum distance from objects
+    sf::Vector2f playerSpawn = objectManager.findValidPlayerSpawn({512, 512}, playerClearanceRadius);
+    mPlayer.setPosition(playerSpawn);
 }
 
 Game::~Game()
@@ -26,8 +30,6 @@ Game::~Game()
     // Shutdown ImGui in the rendering thread before exiting
     ImGui::SFML::Shutdown();
 }
-
-
 
 // It always should run: Input -> Physics -> Render
 void Game::run() {
@@ -134,6 +136,7 @@ void Game::render(float deltaTime) {
     mWindow.display();
 }
 
+
 void Game::imgui(const float deltaTime, Player& player)
 {
     sf::Text text;
@@ -190,6 +193,9 @@ void Game::imgui(const float deltaTime, Player& player)
     // Regenerate the map if parameters are updated
     if (ImGui::Button("Regenerate Map")) {
         mWorldGen.generateMap();  // Trigger map regeneration with new parameters
+        float playerClearanceRadius = 32.0f; // Minimum distance from objects
+        sf::Vector2f playerSpawn = objectManager.findValidPlayerSpawn({512,512}, playerClearanceRadius);
+        player.setPosition(playerSpawn);
     }
 
     ImGui::End();
