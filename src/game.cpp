@@ -129,8 +129,8 @@ void Game::render(float deltaTime) {
         }
     }
 
-
-    mPlayer.renderBounds(mWindow);
+    // Player's collision box
+    // mPlayer.renderBounds(mWindow);
 
     // ImGui rendering
     imgui(deltaTime, mPlayer);

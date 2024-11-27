@@ -62,18 +62,18 @@ void Player::animate(float deltaTime)
 
 void Player::renderBounds(sf::RenderWindow& window) {
     // Define the square size for the bounding box
-    float squareSize = 1.0f;  // Example square size
+    float squareSize = 8.0f;  // Example square size
 
     // Calculate the position of the bounding box for the bottom-center square
     sf::FloatRect playerBounds(
         mPosition.x - squareSize / 2,  // Center the bounding box horizontally on the player
-        mPosition.y + PLAYER_HEIGHT/5 - squareSize-5,  // Position it at the bottom of the player sprite
-        squareSize+2,  // Set the width of the bounding box
+        mPosition.y + PLAYER_HEIGHT/5 - squareSize - 2,  // Position it at the bottom of the player sprite
+        squareSize,  // Set the width of the bounding box
         squareSize  // Set the height of the bounding box
     );
 
     // Create a rectangle shape to visualize the bounding box
-    sf::RectangleShape boundsRect(sf::Vector2f(squareSize+2, squareSize));
+    sf::RectangleShape boundsRect(sf::Vector2f(squareSize, squareSize));
     boundsRect.setPosition(playerBounds.left, playerBounds.top);  // Set the position based on the calculated bounds
     boundsRect.setFillColor(sf::Color(255, 0, 0, 128));  // Semi-transparent red for visibility
 
@@ -89,17 +89,18 @@ sf::FloatRect getInteractionRange(const std::shared_ptr<GameObject>& object) {
 
 void Player::updatePosition(const float deltaTime, const std::vector<std::shared_ptr<GameObject>>& objects)
 {
+    if (mDirection.x != 0 || mDirection.y != 0)
+        mSoundEffects.playSound("Walk"); // Start walking sound
+    else
+        mSoundEffects.stopSound("Walk"); // Stop walking sound
 
-    if(mDirection.x != 0 || mDirection.y != 0) mSoundEffects.playSound("Walk"); //Starts playing walking sound
-    else mSoundEffects.stopSound("Walk"); // //Stops playing walking sound
-
-    // Creating randomized value for pitch
+    // Create randomized value for pitch
     std::random_device random;
     std::uniform_real_distribution<float> dist(0.5f, 1.25f);
 
-    mSoundEffects.setPitch("Walk",mSpeed / 90.0f * dist(random) ); // Sets sound playing speed according to player speed
+    mSoundEffects.setPitch("Walk", mSpeed / 90.0f * dist(random)); // Set sound pitch based on speed
 
-    // Only normalize for velocity, do not alter `direction` directly for animation
+    // Normalize direction for velocity calculation
     sf::Vector2f normalizedDirection = mDirection;
     float vectorLength = std::sqrt(mDirection.x * mDirection.x + mDirection.y * mDirection.y);
     if (vectorLength != 0)
@@ -108,47 +109,85 @@ void Player::updatePosition(const float deltaTime, const std::vector<std::shared
         normalizedDirection.y /= vectorLength;
     }
 
-    // Calculate potential new position
-
-    // Setting the velocity and position accordingly
+    // Calculate potential new position based on movement direction
     mVelocity.x = mSpeed * normalizedDirection.x;
-    mVelocity.y = mSpeed * -normalizedDirection.y; // Because SFML's graphic library positive y-axis points downward
+    mVelocity.y = mSpeed * -normalizedDirection.y; // SFML's positive y-axis is downward
 
     sf::Vector2f newPosition = mPosition + mVelocity * deltaTime;
 
-    // Create a bounding box for the player's new position, adjusted for sprite padding
-    float squareSize = 1.0f;  // Same square size as before
+    // Create a bounding box for the player's new position
+    float squareSize = 8.0f;
     sf::FloatRect playerBounds(
-        newPosition.x - squareSize / 2,  // Center the bounding box horizontally on the player
-        newPosition.y + PLAYER_HEIGHT / 5 - squareSize - 5,  // Position it at the bottom of the player sprite
-        squareSize+2,  // Set the width of the bounding box
-        squareSize   // Set the height of the bounding box
+        newPosition.x - squareSize / 2,
+        newPosition.y + PLAYER_HEIGHT / 5 - squareSize - 2,
+        squareSize,
+        squareSize
     );
 
+    bool collisionOccurred = false;
+    sf::Vector2f overlap(0, 0);
 
     // Check for collisions with objects
-    bool collided = false;
-    for (const auto& object : objects) {
-        if (playerBounds.intersects(object->getCollisionBox())) {
-            collided = true;
-            break;
-        }
+    for (const auto& object : objects)
+    {
+        // If there's a collision, calculate the overlap and adjust position
+        if (playerBounds.intersects(object->getCollisionBox()))
+        {
+            collisionOccurred = true;
 
-        if (getInteractionRange(object).contains(mPosition)) {
-            // You can interact with the object, perform actions like damage or interaction here
-            // std::cout << "Player is near the object, ready to interact!" << std::endl;
+            // Calculate the intersection area to determine overlap
+            sf::FloatRect intersection = playerBounds;
+            intersection.intersects(object->getCollisionBox(), intersection);
+
+            // First handle horizontal overlap
+            if (intersection.width < intersection.height) {
+                // Horizontal collision: adjust player position to stop overlapping
+                if (newPosition.x < object->getCollisionBox().left) {
+                    // Moving to the right, adjust the x position
+                    overlap.x = -(playerBounds.left + playerBounds.width - object->getCollisionBox().left);
+                }
+                else {
+                    // Moving to the left, adjust the x position
+                    overlap.x = object->getCollisionBox().left + object->getCollisionBox().width - playerBounds.left;
+                }
+            }
+
+            // Then handle vertical overlap
+            if (intersection.height < intersection.width) {
+                // Vertical collision: adjust player position to stop overlapping
+                if (newPosition.y < object->getCollisionBox().top) {
+                    // Moving downward, adjust the y position
+                    overlap.y = -(playerBounds.top + playerBounds.height - object->getCollisionBox().top);
+                }
+                else {
+                    // Moving upward, adjust the y position
+                    overlap.y = object->getCollisionBox().top + object->getCollisionBox().height - playerBounds.top;
+                }
+            }
         }
     }
 
-    // Only update position if no collision occurred
-    if (!collided) {
-        mPosition = newPosition;
+    // Adjust position by the overlap amount if collision occurred
+    if (collisionOccurred)
+    {
+        newPosition.x += overlap.x;
+        newPosition.y += overlap.y;
     }
 
+    // Update position if no collision occurred or after adjusting position for collisions
+    mPosition = newPosition;
+
+    // Ensure the player stays within world bounds
     keepInWorldBounds();
+
+    // Apply animation based on movement
     animate(deltaTime);
+
+    // Update sprite position
     mSprite.setPosition(mPosition);
 }
+
+
 
 // Creating a bounding box so that the sprite won't go outside the screen and instead makes it bounce back
 // Padding is needed due to SFML2 using the (0,0) of the shape as a reference point
