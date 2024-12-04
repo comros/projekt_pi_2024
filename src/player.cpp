@@ -60,28 +60,6 @@ void Player::animate(float deltaTime)
     mAnimations[static_cast<int>(mCurrentAnimation)].ApplyToSprite(mSprite);
 }
 
-void Player::renderBounds(sf::RenderWindow& window) {
-    // Define the square size for the bounding box
-    float squareSize = 8.0f;  // Example square size
-
-    // Calculate the position of the bounding box for the bottom-center square
-    sf::FloatRect playerBounds(
-        mPosition.x - squareSize / 2,  // Center the bounding box horizontally on the player
-        mPosition.y + PLAYER_HEIGHT/5 - squareSize - 2,  // Position it at the bottom of the player sprite
-        squareSize,  // Set the width of the bounding box
-        squareSize  // Set the height of the bounding box
-    );
-
-    // Create a rectangle shape to visualize the bounding box
-    sf::RectangleShape boundsRect(sf::Vector2f(squareSize, squareSize));
-    boundsRect.setPosition(playerBounds.left, playerBounds.top);  // Set the position based on the calculated bounds
-    boundsRect.setFillColor(sf::Color(255, 0, 0, 128));  // Semi-transparent red for visibility
-
-    // Draw the bounding box on the screen
-    window.draw(boundsRect);
-}
-
-
 sf::FloatRect getInteractionRange(const std::shared_ptr<GameObject>& object) {
     // Use the object's getInteractionRange method to define a proximity box
     return object->getInteractionRange();
@@ -187,8 +165,6 @@ void Player::updatePosition(const float deltaTime, const std::vector<std::shared
     mSprite.setPosition(mPosition);
 }
 
-
-
 // Creating a bounding box so that the sprite won't go outside the screen and instead makes it bounce back
 // Padding is needed due to SFML2 using the (0,0) of the shape as a reference point
 // Adjusting the bounding box size by subtracting the shape's size makes it so the box won't leave the screen
@@ -204,20 +180,15 @@ void Player::updateCamera(sf::RenderWindow& window)
 {
     mView = window.getDefaultView();
 
-    // Adjust the viewport size by the zoom factor
-    sf::Vector2f viewSize = mView.getSize();
-    sf::Vector2f scaledViewSize = viewSize * mZoomFactor; // Scaled by zoom
-    sf::Vector2f halfViewSize = scaledViewSize / 2.0f;
-
     // Get the window size and calculate the aspect ratio
     sf::Vector2u windowSize = window.getSize();
     float aspectRatio = static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
 
     // Define world bounds
-    float worldWidth = 512.0f * 16.0f; // Example world width
-    float worldHeight = 512.0f * 16.0f; // Example world height
+    float worldWidth = 512.0f * 16.0f;
+    float worldHeight = 512.0f * 16.0f;
 
-        // Adjust the view based on the aspect ratio
+    // Adjust the view based on the aspect ratio
     if (aspectRatio > 1.0f) {
         // If the window is wider than the target (landscape mode), adjust the width
         mView.setSize(worldWidth, worldWidth / aspectRatio);  // Maintain height and adjust width
@@ -229,31 +200,10 @@ void Player::updateCamera(sf::RenderWindow& window)
     // If camera is locked, follow the player
     if (mIsCameraLocked)
     {
-        // Check if zoom is below the threshold for clamping
-        if (mZoomFactor < 3.0f)
-        {
-            sf::Vector2f targetPosition = mPosition;
+        sf::Vector2f targetPosition = mPosition;
+        fixedCameraPosition = targetPosition;
 
-            // Clamp camera's X position
-            if (mPosition.x - halfViewSize.x < 0)
-                targetPosition.x = halfViewSize.x;
-            else if (mPosition.x + halfViewSize.x > worldWidth)
-                targetPosition.x = worldWidth - halfViewSize.x;
-
-            // Clamp camera's Y position
-            if (mPosition.y - halfViewSize.y < 0)
-                targetPosition.y = halfViewSize.y;
-            else if (mPosition.y + halfViewSize.y > worldHeight)
-                targetPosition.y = worldHeight - halfViewSize.y;
-
-            fixedCameraPosition = targetPosition; // Save clamped position
-        }
-        else
-        {
-            fixedCameraPosition = mPosition; // Follow player without bounds
-        }
-
-        mView.setCenter(fixedCameraPosition); // Set the clamped or free position
+        mView.setCenter(fixedCameraPosition);
     }
     else
     {
@@ -266,3 +216,23 @@ void Player::updateCamera(sf::RenderWindow& window)
     window.setView(mView);
 }
 
+void Player::renderCollisionBox(sf::RenderWindow& window) {
+    // Define the square size for the bounding box
+    float squareSize = 8.0f;  // Example square size
+
+    // Calculate the position of the bounding box for the bottom-center square
+    sf::FloatRect playerBounds(
+        mPosition.x - squareSize / 2,  // Center the bounding box horizontally on the player
+        mPosition.y + PLAYER_HEIGHT/5 - squareSize - 2,  // Position it at the bottom of the player sprite
+        squareSize,  // Set the width of the bounding box
+        squareSize  // Set the height of the bounding box
+    );
+
+    // Create a rectangle shape to visualize the bounding box
+    sf::RectangleShape boundsRect(sf::Vector2f(squareSize, squareSize));
+    boundsRect.setPosition(playerBounds.left, playerBounds.top);  // Set the position based on the calculated bounds
+    boundsRect.setFillColor(sf::Color(255, 0, 0, 128));  // Semi-transparent red for visibility
+
+    // Draw the bounding box on the screen
+    window.draw(boundsRect);
+}

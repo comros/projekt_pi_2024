@@ -10,7 +10,7 @@
 
 class ObjectManager {
 public:
-    int amountOfObjects = 5000;
+    int amountOfObjects = 2500;
 
     // Constructor accepting WorldGen reference
     ObjectManager(WorldGen& worldGen) : mWorldGen(worldGen) {}

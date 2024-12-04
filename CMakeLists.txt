@@ -55,10 +55,8 @@ add_executable(main src/main.cpp
         src/perlinnoise.cpp
         src/perlinnoise.cpp
         src/worldgen.cpp
-        src/gameobject.cpp
         headers/gameobject.hpp
         headers/gameobject.hpp
-        src/gameobject.cpp
         headers/ObjectManager.hpp
 
 )

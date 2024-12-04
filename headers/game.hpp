@@ -14,16 +14,13 @@ public:
     Game();
     ~Game();
     void run();
-    void updateView();
     bool isVisibleInView(const sf::FloatRect& objectBounds, const sf::View& view);
 
 private:
     void processEvents();
     void update(float deltaTime);
-    void generateMap();
     void render(float deltaTime);
     void toggleFullscreen();
-    void spawnPlayerOnSand();
     void imgui(float deltaTime, Player& player); // ImGui
 
 

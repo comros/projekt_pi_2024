@@ -31,51 +31,22 @@ objectManager(mWorldGen)
 
 Game::~Game()
 {
-    // Shutdown ImGui in the rendering thread before exiting
     ImGui::SFML::Shutdown();
 }
 
 // It always should run: Input -> Physics -> Render
-void Game::run() {
-    while (mWindow.isOpen()) {
+void Game::run()
+{
+    while (mWindow.isOpen())
+    {
         // Calculating deltaTime for fps independency
         const float deltaTime = mClock.restart().asSeconds();
 
         processEvents();
-        updateView();
         update(deltaTime);
         render(deltaTime);
     }
 
-}
-
-void Game::updateView() {
-    // Desired aspect ratio of the game world (e.g., 16:9)
-    const float aspectRatio = 16.f / 9.f;
-
-    // Get the current window size
-    const float windowWidth = mWindow.getSize().x;
-    const float windowHeight = mWindow.getSize().y;
-
-    // Calculate the target size for the view, keeping the aspect ratio constant
-    float targetWidth = windowHeight * aspectRatio;
-    float targetHeight = windowWidth / aspectRatio;
-
-    // Create a new view
-    sf::View view;
-
-    if (windowWidth > windowHeight * aspectRatio) {
-        // Window is too wide (letterbox effect)
-        view.setSize(targetWidth, windowHeight); // Set the width to maintain aspect ratio
-        view.setCenter(windowWidth / 2.f, windowHeight / 2.f); // Center the view horizontally
-    } else {
-        // Window is too tall (pillarbox effect)
-        view.setSize(windowWidth, targetHeight); // Set the height to maintain aspect ratio
-        view.setCenter(windowWidth / 2.f, windowHeight / 2.f); // Center the view vertically
-    }
-
-    // Set the view to the window
-    mWindow.setView(view);
 }
 
 void Game::toggleFullscreen() {
@@ -103,12 +74,6 @@ void Game::processEvents() {
         // Handle the fullscreen toggle with F11
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
             toggleFullscreen();
-        }
-
-        // Handle resizing while maintaining aspect ratio
-        if (event.type == sf::Event::Resized)
-        {
-            updateView(); // Update the view when the window is resized
         }
 
         mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager); // Pass ObjectManager

@@ -53,7 +53,7 @@ public:
 
     sf::View getCamera() const { return mView; }
 
-    void renderBounds(sf::RenderWindow& window);
+    void renderCollisionBox(sf::RenderWindow& window);
 
     // Method to change sprite color using RGBA
     void adjustPlayerBrightness(float brightness) {
@@ -68,7 +68,7 @@ private:
 
 
     sf::Sprite mSprite;
-    sf::Vector2f mPosition = {256*16, 256*16}; // Middle of the map (if map is 256x256 and tiles are 16x16)
+    sf::Vector2f mPosition; // Middle of the map (if map is 256x256 and tiles are 16x16)
     sf::Vector2f mDirection;
     sf::Vector2f mVelocity;
     sf::View mView;
