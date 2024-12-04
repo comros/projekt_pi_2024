@@ -15,6 +15,7 @@ public:
     ~Game();
     void run();
     void updateView();
+    bool isVisibleInView(const sf::FloatRect& objectBounds, const sf::View& view);
 
 private:
     void processEvents();
@@ -24,7 +25,6 @@ private:
     void toggleFullscreen();
     void spawnPlayerOnSand();
     void imgui(float deltaTime, Player& player); // ImGui
-    void handleTileClick(int mouseX, int mouseY);
 
 
     sf::Music backgroundMusic;

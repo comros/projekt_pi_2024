@@ -100,12 +100,6 @@ void Game::processEvents() {
 
         mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager);
 
-        if (event.type == sf::Event::MouseButtonPressed) {
-            if (event.mouseButton.button == sf::Mouse::Right) {
-                handleTileClick(event.mouseButton.x, event.mouseButton.y);
-            }
-        }
-
         // Handle the fullscreen toggle with F11
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
             toggleFullscreen();
@@ -153,50 +147,62 @@ void Game::update(const float deltaTime)
     mPlayer.adjustPlayerBrightness(brightness);
 }
 
+bool Game::isVisibleInView(const sf::FloatRect& objectBounds, const sf::View& view) {
+    sf::FloatRect viewBounds(
+        view.getCenter() - view.getSize() / 2.0f,
+        view.getSize()
+    );
+    return viewBounds.intersects(objectBounds);
+}
 
 void Game::render(float deltaTime) {
-
     // Clear and render the window contents
-    // mWindow.clear(sf::Color(36,126,202,255));
-    mWindow.clear(sf::Color(02,0,0,255));
+    mWindow.clear(sf::Color(0, 0, 0, 255));
 
+    // Get the current camera view
+    sf::View view = mWindow.getView();
+
+    // Render world tiles
     mWorldGen.render(mWindow);
 
+    // Render visible rocks and bushes
     objectManager.renderRocks(mWindow);
     objectManager.renderBushes(mWindow);
 
+    // Render trees behind the player if visible
     for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
-        Tree* tree = dynamic_cast<Tree*>(object.get()); // Cast to Tree* (non-const version)
-
+        Tree* tree = dynamic_cast<Tree*>(object.get());
         if (tree) {
-            if (!tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
+            sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
+            if (isVisibleInView(treeBounds, view) && !tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
                 tree->adjustAlpha(1.f);
-                // If the tree is not in range, render it on behind of the player
                 mWindow.draw(tree->getSprite());
             }
         }
     }
 
+    // Render the player sprite
     mWindow.draw(mPlayer.getSprite());
 
+    // Render trees on top of the player if visible
     for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
-        Tree* tree = dynamic_cast<Tree*>(object.get()); // Cast to Tree* (non-const version)
-
+        Tree* tree = dynamic_cast<Tree*>(object.get());
         if (tree) {
-            if (tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->adjustAlpha(.5f);
-                // If the tree is in range, render it on top of the player
+            sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
+            if (isVisibleInView(treeBounds, view) && tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
+                tree->adjustAlpha(0.5f);
                 mWindow.draw(tree->getSprite());
             }
         }
     }
 
-    // Player's collision box
+    // Optional: Render player's collision box
     // mPlayer.renderBounds(mWindow);
 
     // ImGui rendering
     imgui(deltaTime, mPlayer);
 
+    // Display the rendered frame
     mWindow.display();
 }
 
@@ -281,95 +287,4 @@ void Game::imgui(const float deltaTime, Player& player)
 
     // Render ImGui content
     ImGui::SFML::Render(mWindow);
-}
-
-void Game::handleTileClick(int mouseX, int mouseY) {
-    // Convert the mouse position (screen space) to world coordinates
-    sf::Vector2i mousePos(mouseX, mouseY);
-    sf::Vector2f worldPos = mWindow.mapPixelToCoords(mousePos);
-
-    // Calculate the tile's grid position from the world position
-    int tileX = static_cast<int>(worldPos.x) / 16;
-    int tileY = static_cast<int>(worldPos.y) / 16;
-
-    // Ensure the tile is within the bounds of the world (you can adjust this depending on the world size)
-    if (tileX >= 0 && tileX < 512 && tileY >= 0 && tileY < 512) {
-        // Get the clicked tile at the calculated position
-        Tile& clickedTile = mWorldGen.getTileAt(tileX, tileY);
-
-        // Check if the clicked tile is a water tile (DeepWater or ShallowWater)
-        if (clickedTile.getType() == Tile::TileType::DeepWater ||
-            clickedTile.getType() == Tile::TileType::ShallowWater) {
-            std::cout << "Cannot place grass on water tile at (" << tileX << ", " << tileY << ").\n";
-            return; // Return early if we can't place grass on water
-        }
-
-        // Now, check the neighboring tiles to ensure they can accept the grass tile
-        std::vector<sf::Vector2i> directions = {
-            {1, 0},  // Right
-            {-1, 0}, // Left
-            {0, 1},  // Down
-            {0, -1}, // Up
-            {1, 1},  // Bottom-right diagonal
-            {1, -1}, // Top-right diagonal
-            {-1, 1}, // Bottom-left diagonal
-            {-1, -1} // Top-left diagonal
-        };
-
-        // Iterate over the directions to check the neighboring tiles
-        for (const auto& dir : directions) {
-            int neighborX = tileX + dir.x;
-            int neighborY = tileY + dir.y;
-
-            // Ensure the neighboring tile is within bounds
-            if (neighborX >= 0 && neighborX < 512 && neighborY >= 0 && neighborY < 512) {
-                // Get the neighboring tile
-                Tile& neighborTile = mWorldGen.getTileAt(neighborX, neighborY);
-
-                // Check if the neighboring tile is water (DeepWater or ShallowWater)
-                if (neighborTile.getType() == Tile::TileType::DeepWater ||
-                    neighborTile.getType() == Tile::TileType::ShallowWater) {
-                    std::cout << "Cannot place grass due to neighboring water tile at ("
-                              << neighborX << ", " << neighborY << ").\n";
-                    return; // Return early if we can't place grass due to a neighboring water tile
-                }
-
-                // For Sand, check if the bitmask is not 15 (and we want to block placement if it's not 15)
-                if (neighborTile.getType() == Tile::TileType::Sand &&
-                    mWorldGen.calculateBitmask(neighborX, neighborY, neighborTile.getType()) != 15) {
-                    std::cout << "Cannot place grass due to neighboring sand tile at ("
-                              << neighborX << ", " << neighborY << ") with bitmask not 15.\n";
-                    return; // Return early if we can't place grass due to a sand tile with bitmask != 15
-                }
-            }
-        }
-
-        // If no restrictions, place the grass tile
-        // Set the clicked tile type to NormalGrass (this will change any tile's type to grass)
-        clickedTile.setType(Tile::TileType::Grass);
-
-        // Print tile information for debugging
-        clickedTile.printInfo();
-
-        // Calculate and set the bitmask for the clicked tile (reflecting the new type)
-        clickedTile.setTextureByBitmask(mWorldGen.calculateBitmask(tileX, tileY, Tile::TileType::Grass));
-
-        // Update neighboring tiles' bitmask only, without changing their types
-        for (const auto& dir : directions) {
-            int neighborX = tileX + dir.x;
-            int neighborY = tileY + dir.y;
-
-            // Ensure the neighboring tile is within bounds
-            if (neighborX >= 0 && neighborX < 512 && neighborY >= 0 && neighborY < 512) {
-                // Get the neighboring tile (no type change)
-                Tile& neighborTile = mWorldGen.getTileAt(neighborX, neighborY);
-
-                // Calculate and set the bitmask for the neighboring tile (without changing the type)
-                neighborTile.setTextureByBitmask(mWorldGen.calculateBitmask(neighborX, neighborY, neighborTile.getType()));
-            }
-        }
-
-    } else {
-        std::cout << "Click is outside the world bounds.\n";
-    }
 }

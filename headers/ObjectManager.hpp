@@ -129,29 +129,61 @@ public:
 
     // Separate render functions for each object type
     // I render from the end of the Array to keep the proper layering
+    // Also they are only rendered if in view bounds, but I do it 3 times so there might be a better way?
     void renderRocks(sf::RenderWindow& window) {
+        // Get the view's visible bounds
+        sf::View view = window.getView();
+        sf::FloatRect viewBounds(
+            view.getCenter() - view.getSize() / 2.0f,
+            view.getSize()
+        );
+
         for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
             if (auto rock = std::dynamic_pointer_cast<Rock>(*it)) {
-                window.draw(rock->getSprite());
+                sf::FloatRect rockBounds = rock->getSprite().getGlobalBounds();
+                if (viewBounds.intersects(rockBounds)) {
+                    window.draw(rock->getSprite());
+                }
             }
         }
     }
 
     void renderBushes(sf::RenderWindow& window) {
+        // Get the view's visible bounds
+        sf::View view = window.getView();
+        sf::FloatRect viewBounds(
+            view.getCenter() - view.getSize() / 2.0f,
+            view.getSize()
+        );
+
         for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
             if (auto bush = std::dynamic_pointer_cast<Bush>(*it)) {
-                window.draw(bush->getSprite());
+                sf::FloatRect bushBounds = bush->getSprite().getGlobalBounds();
+                if (viewBounds.intersects(bushBounds)) {
+                    window.draw(bush->getSprite());
+                }
             }
         }
     }
 
     void renderTrees(sf::RenderWindow& window) {
+        // Get the view's visible bounds
+        sf::View view = window.getView();
+        sf::FloatRect viewBounds(
+            view.getCenter() - view.getSize() / 2.0f,
+            view.getSize()
+        );
+
         for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
             if (auto tree = std::dynamic_pointer_cast<Tree>(*it)) {
-                window.draw(tree->getSprite());
+                sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
+                if (viewBounds.intersects(treeBounds)) {
+                    window.draw(tree->getSprite());
+                }
             }
         }
     }
+
 
     void handleObjectClick(const sf::Vector2f& worldPos, const sf::Vector2f& playerPos) {
         // Iterate through all objects in the container
