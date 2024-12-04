@@ -7,20 +7,24 @@
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/worldgen.hpp"
+#include "../headers/ObjectManager.hpp"
 
 class Game {
 public:
     Game();
     ~Game();
     void run();
+    void updateView();
+    bool isVisibleInView(const sf::FloatRect& objectBounds, const sf::View& view);
 
 private:
     void processEvents();
     void update(float deltaTime);
     void generateMap();
     void render(float deltaTime);
+    void toggleFullscreen();
+    void spawnPlayerOnSand();
     void imgui(float deltaTime, Player& player); // ImGui
-    void handleTileClick(int mouseX, int mouseY);
 
 
     sf::Music backgroundMusic;
@@ -32,6 +36,7 @@ private:
     Player mPlayer;
 
     WorldGen mWorldGen;
+    ObjectManager objectManager;
 
     // Day and night cycle
     float mCurrentTime = 12.0f; // Start at 12:00 in-game time (midday)
@@ -43,8 +48,8 @@ private:
         float normalizedTime = inGameTime / inGameDayDuration;
 
         // Use a sine wave to simulate brightness: peaks at noon (normalizedTime = 0.5)
-        float brightness = 1.0f + 0.5f * std::sin(2 * M_PI * (normalizedTime - 0.25f)); // Shift by 6 hours for correct phase
-        return std::clamp(brightness, 0.2f, 1.1f); // Clamp brightness to prevent extremes
+        float brightness = 0.1f + 0.5f * std::sin(2 * M_PI * (normalizedTime - 0.25f)) + 0.6f;// Shift by 6 hours for correct phase
+        return std::clamp(brightness, 0.1f, 1.1f); // Clamp brightness to prevent extremes
     }
 };
 

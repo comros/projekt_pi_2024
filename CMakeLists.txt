@@ -55,6 +55,11 @@ add_executable(main src/main.cpp
         src/perlinnoise.cpp
         src/perlinnoise.cpp
         src/worldgen.cpp
+        src/gameobject.cpp
+        headers/gameobject.hpp
+        headers/gameobject.hpp
+        src/gameobject.cpp
+        headers/ObjectManager.hpp
 
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system sfml-main PUBLIC ImGui-SFML::ImGui-SFML)

@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+
+#include "gameobject.hpp"
 #include "../headers/animation.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/audio.hpp"
@@ -28,7 +30,7 @@ enum class PlayerAnimation {
 class Player {
 public:
     Player();
-    void updatePosition(float deltaTime);
+    void updatePosition(float deltaTime, const std::vector<std::shared_ptr<GameObject>>& objects);
     void updateCamera(sf::RenderWindow& window);
 
     // Getters and setters
@@ -51,6 +53,13 @@ public:
 
     sf::View getCamera() const { return mView; }
 
+    void renderBounds(sf::RenderWindow& window);
+
+    // Method to change sprite color using RGBA
+    void adjustPlayerBrightness(float brightness) {
+        mSprite.setColor(adjustColorIntensity(sf::Color(255,255,255,255), brightness));  // Set the color (RGBA) of the sprite
+    }
+
 private:
     void keepInWorldBounds();
     void animate(float deltaTime);
@@ -71,6 +80,14 @@ private:
     // Making an array of animations (default constructor is needed)
     Animation mAnimations[static_cast<int>(PlayerAnimation::Count)];
     PlayerAnimation mCurrentAnimation = {PlayerAnimation::IdleDown};
+
+    sf::Color adjustColorIntensity(const sf::Color& originalColor, float multiplier) {
+        return sf::Color(
+            std::min(static_cast<int>(originalColor.r * multiplier), 255),
+            std::min(static_cast<int>(originalColor.g * multiplier), 255),
+            std::min(static_cast<int>(originalColor.b * multiplier), 255)
+        );
+    }
 
 };
 
