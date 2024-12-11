@@ -28,6 +28,7 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3)) {
         player.setCameraLocked(false);
+
     }
 
 

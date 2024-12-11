@@ -266,6 +266,7 @@ void Game::imgui(const float deltaTime, Player& player)
     if (ImGui::Button("Regenerate Objects")) {
         objectManager.clearObjects(); // Clear existing objects
         objectManager.spawnObjects({512, 512}); // Spawn new objects
+
     }
 
     ImGui::End();
