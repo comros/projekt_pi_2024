@@ -2,6 +2,11 @@
 #define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
+
+#include <SFML/Audio.hpp>
+
+#include "gameobject.hpp"
+
 #include "../headers/animation.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/audio.hpp"
@@ -27,7 +32,7 @@ enum class PlayerAnimation {
 class Player {
 public:
     Player();
-    void updatePosition(float deltaTime);
+    void updatePosition(float deltaTime, const std::vector<std::shared_ptr<GameObject>>& objects);
     void updateCamera(sf::RenderWindow& window);
 
     // Getters and setters
@@ -49,10 +54,18 @@ public:
     void setEffectsVolume(const float volume) { mSoundEffects.setGlobalVolume(volume); };
 
 
+    sf::View getCamera() const { return mView; }
+
+    void renderCollisionBox(sf::RenderWindow& window);
+
+    // Method to change sprite color using RGBA
+    void adjustPlayerBrightness(float brightness) {
+        mSprite.setColor(adjustColorIntensity(sf::Color(255,255,255,255), brightness));  // Set the color (RGBA) of the sprite
+    }
 
 
 private:
-    void checkBounds();
+    void keepInWorldBounds();
     void animate(float deltaTime);
 
     Audio mSoundEffects;
@@ -61,7 +74,7 @@ private:
 
 
     sf::Sprite mSprite;
-    sf::Vector2f mPosition = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
+    sf::Vector2f mPosition; // Middle of the map (if map is 256x256 and tiles are 16x16)
     sf::Vector2f mDirection;
     sf::Vector2f mVelocity;
     sf::View mView;
@@ -73,6 +86,14 @@ private:
     // Making an array of animations (default constructor is needed)
     Animation mAnimations[static_cast<int>(PlayerAnimation::Count)];
     PlayerAnimation mCurrentAnimation = {PlayerAnimation::IdleDown};
+
+    sf::Color adjustColorIntensity(const sf::Color& originalColor, float multiplier) {
+        return sf::Color(
+            std::min(static_cast<int>(originalColor.r * multiplier), 255),
+            std::min(static_cast<int>(originalColor.g * multiplier), 255),
+            std::min(static_cast<int>(originalColor.b * multiplier), 255)
+        );
+    }
 
 };
 

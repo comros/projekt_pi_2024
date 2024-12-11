@@ -48,17 +48,19 @@ add_executable(main src/main.cpp
         headers/game.hpp
         src/player.cpp
         headers/player.hpp
-        headers/definitions.hpp
         src/inputhandler.cpp
         headers/inputhandler.hpp
         headers/audio.hpp
         src/audio.cpp
-        src/game.cpp
-        headers/animation.hpp
-        headers/item.hpp
-        headers/inventory.hpp
+        src/perlinnoise.cpp
+        src/perlinnoise.cpp
+        src/worldgen.cpp
+        headers/gameobject.hpp
+        headers/gameobject.hpp
+        headers/ObjectManager.hpp
         headers/inventory.hpp
         src/inventory.cpp
+        headers/item.hpp
 
 
 )

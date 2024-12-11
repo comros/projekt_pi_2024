@@ -4,8 +4,8 @@
 
 InputHandler::InputHandler() = default;
 
-// Handle individual SFML events (e.g., closing the window, zoom, camera lock/unlock)
-void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player &player, Inventory &inventory) {
+
+void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, Inventory &inventory) {
     if (event.type == sf::Event::Closed) {
         window.close();
     }
@@ -17,10 +17,10 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     // Camera zoom
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) &&
         event.type == sf::Event::MouseWheelMoved &&
-        player.getZoomFactor() - 0.05f * static_cast<float>(event.mouseWheel.delta) > 0 &&
-        player.getZoomFactor() - 0.05f * static_cast<float>(event.mouseWheel.delta) < 1) {
-        player.setZoomFactor(0.05f * static_cast<float>(event.mouseWheel.delta));
-        }
+        player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) > .02f &&
+        player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) < 2) {
+        player.setZoomFactor(0.02f * static_cast<float>(event.mouseWheel.delta));
+    }
 
     // Camera lock/unlock
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2)) {
@@ -29,6 +29,7 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3)) {
         player.setCameraLocked(false);
     }
+
 
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::I) {
         inventory.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
@@ -39,16 +40,22 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
             inventory.updateHotbarSelection(i);// Zmień aktywny slot
             break;
         }
+    // Handle object interactions
+    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+        sf::Vector2i mousePos(event.mouseButton.x, event.mouseButton.y);
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); // Convert to world coordinates
+
+        // Check if any object was clicked and interact with it
+        objectManager.handleObjectClick(worldPos, player.getPosition());
+
     }
 }
 
-// Determine the player’s movement direction based on keyboard input
-sf::Vector2f InputHandler::getPlayerDirection()
-{
+sf::Vector2f InputHandler::getPlayerDirection() {
     sf::Vector2f direction(0, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        direction.y != -1 ?   direction.y = 1 : direction.y = 0;
+        direction.y != -1 ? direction.y = 1 : direction.y = 0;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         direction.y != 1 ? direction.y = -1 : direction.y = 0;
