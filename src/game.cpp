@@ -89,7 +89,7 @@ void Game::processEvents() {
             toggleFullscreen();
         }
 
-        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventory); // Pass ObjectManager
+
 
     }
 
@@ -270,6 +270,4 @@ void Game::imgui(const float deltaTime, Player& player)
 
     ImGui::End();
 
-    // Render ImGui content
-    ImGui::SFML::Render(mWindow);
 }

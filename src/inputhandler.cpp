@@ -20,7 +20,7 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
         player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) > .02f &&
         player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) < 2) {
         player.setZoomFactor(0.02f * static_cast<float>(event.mouseWheel.delta));
-    }
+        }
 
     // Camera lock/unlock
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2)) {
@@ -40,17 +40,17 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
             inventory.updateHotbarSelection(i);// Zmień aktywny slot
             break;
         }
-    // Handle object interactions
+    }
+        // Handle object interactions
     if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
         sf::Vector2i mousePos(event.mouseButton.x, event.mouseButton.y);
         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); // Convert to world coordinates
 
         // Check if any object was clicked and interact with it
         objectManager.handleObjectClick(worldPos, player.getPosition());
+        }
 
-    }
 }
-
 sf::Vector2f InputHandler::getPlayerDirection() {
     sf::Vector2f direction(0, 0);
 
