@@ -1,9 +1,11 @@
 #include "../headers/game.hpp"
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include <iostream>
 
 
-Game::Game()
+
+Game::Game() : mInventory(4, 9)
 {
     mWindow.setFramerateLimit(144);
 
@@ -15,7 +17,12 @@ Game::Game()
     backgroundMusic.setLoop(true);
     backgroundMusic.play();
     backgroundMusic.setVolume(10);
-
+    Item pickaxe("Pickaxe", PICKAXE);
+    Item sword("Sword", SWORD);
+    Item iron_ore("Iron_ore", IRONORE, 10);
+    mInventory.addItem(sword, 0, 2);
+    mInventory.addItem(pickaxe, 0, 1);
+    mInventory.addItem(iron_ore, 0, 0);
     // Load terrain texture once
     mTTerrain.loadFromFile(TERRAIN_ATLAS);
     mTTerrain.setSmooth(false); // Prevents texture bleeding
@@ -49,7 +56,7 @@ void Game::processEvents() {
     sf::Event event{};
     while (mWindow.pollEvent(event) && mWindow.hasFocus()) {
         ImGui::SFML::ProcessEvent(mWindow, event);
-        mInputHandler.handleEvent(event, mWindow, mPlayer);
+        mInputHandler.handleEvent(event, mWindow, mPlayer, mInventory);
     }
 
     // Pause the music when window lost focus
@@ -60,6 +67,7 @@ void Game::processEvents() {
     if (event.type == sf::Event::GainedFocus) {
         backgroundMusic.play();
     }
+
 
 }
 
@@ -118,8 +126,14 @@ void Game::render(float deltaTime) {
     mWindow.draw(mMapVertices, &mTTerrain); // Draw map as a single vertex array
     mWindow.draw(mPlayer.getSprite());
 
+
     // ImGui rendering
+    ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
     imgui(deltaTime, mPlayer);
+    mInventory.drawInventory(mWindow);
+    mInventory.drawHotbarOnScreen(mWindow);
+    ImGui::SFML::Render(mWindow);
+
 
     mWindow.display();
 }
@@ -131,8 +145,6 @@ void Game::imgui(const float deltaTime, Player& player)
     static float effectsVolume = 100.0f;
     float musicVolume = backgroundMusic.getVolume()*10;
     const float fps = 1.0f / deltaTime;
-    ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
-
     ImGui::Begin("Player");
 
     ImGui::Text("FPS: %.0f", fps);
@@ -149,9 +161,7 @@ void Game::imgui(const float deltaTime, Player& player)
     if (ImGui::SliderFloat("Music Volume", &musicVolume, 0.0f, 200.0f)) {
         backgroundMusic.setVolume(musicVolume/10); // Sets global volume in player
     }
-
     ImGui::End();
 
-    ImGui::SFML::Render(mWindow);
 }
 

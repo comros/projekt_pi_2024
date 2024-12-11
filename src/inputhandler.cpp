@@ -1,9 +1,11 @@
 #include "../headers/InputHandler.hpp"
 
+
+
 InputHandler::InputHandler() = default;
 
 // Handle individual SFML events (e.g., closing the window, zoom, camera lock/unlock)
-void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player &player) {
+void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player &player, Inventory &inventory) {
     if (event.type == sf::Event::Closed) {
         window.close();
     }
@@ -26,6 +28,17 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3)) {
         player.setCameraLocked(false);
+    }
+
+    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::I) {
+        inventory.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
+    }
+
+    for (int i = 0; i < 9; ++i) {
+        if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(sf::Keyboard::Num1 + i))) {
+            inventory.updateHotbarSelection(i);// Zmień aktywny slot
+            break;
+        }
     }
 }
 

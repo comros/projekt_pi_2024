@@ -53,6 +53,13 @@ add_executable(main src/main.cpp
         headers/inputhandler.hpp
         headers/audio.hpp
         src/audio.cpp
+        src/game.cpp
+        headers/animation.hpp
+        headers/item.hpp
+        headers/inventory.hpp
+        headers/inventory.hpp
+        src/inventory.cpp
+
 
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system sfml-main PUBLIC ImGui-SFML::ImGui-SFML)

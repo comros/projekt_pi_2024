@@ -2,7 +2,6 @@
 #define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include "../headers/animation.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/audio.hpp"
@@ -49,11 +48,16 @@ public:
 
     void setEffectsVolume(const float volume) { mSoundEffects.setGlobalVolume(volume); };
 
+
+
+
 private:
     void checkBounds();
     void animate(float deltaTime);
 
     Audio mSoundEffects;
+
+    bool mInventoryOpen = false;
 
 
     sf::Sprite mSprite;

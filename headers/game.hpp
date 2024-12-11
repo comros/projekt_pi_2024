@@ -6,6 +6,8 @@
 #include "../headers/inputhandler.hpp"
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
+#include "../headers/inventory.hpp"
+#include "../headers/item.hpp"
 
 class Game {
 public:
@@ -13,6 +15,8 @@ public:
     ~Game();
     void run();
 
+
+    Player getmPlayer() const { return mPlayer; }
 private:
     void processEvents();
     void update(float deltaTime);
@@ -20,16 +24,18 @@ private:
     void render(float deltaTime);
     void imgui(float deltaTime, Player& player); // ImGui
 
+    Inventory mInventory;
 
     sf::Music backgroundMusic;
 
 
-    sf::RenderWindow mWindow = { sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Projekt pi 2024", sf::Style::Default};
+    sf::RenderWindow mWindow = { sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Projekt pi 2024", sf::Style::Fullscreen};
     sf::Clock mClock;              // Needed for deltaTime
 
     // Instances
     InputHandler mInputHandler;
     Player mPlayer;
+
 
     // Map generation
 
