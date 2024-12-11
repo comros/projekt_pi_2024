@@ -2,9 +2,11 @@
 #define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
+
 #include <SFML/Audio.hpp>
 
 #include "gameobject.hpp"
+
 #include "../headers/animation.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/audio.hpp"
@@ -51,6 +53,7 @@ public:
 
     void setEffectsVolume(const float volume) { mSoundEffects.setGlobalVolume(volume); };
 
+
     sf::View getCamera() const { return mView; }
 
     void renderCollisionBox(sf::RenderWindow& window);
@@ -60,11 +63,14 @@ public:
         mSprite.setColor(adjustColorIntensity(sf::Color(255,255,255,255), brightness));  // Set the color (RGBA) of the sprite
     }
 
+
 private:
     void keepInWorldBounds();
     void animate(float deltaTime);
 
     Audio mSoundEffects;
+
+    bool mInventoryOpen = false;
 
 
     sf::Sprite mSprite;

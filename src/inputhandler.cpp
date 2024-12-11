@@ -1,8 +1,11 @@
 #include "../headers/InputHandler.hpp"
 
+
+
 InputHandler::InputHandler() = default;
 
-void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager) {
+
+void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, Inventory &inventory) {
     if (event.type == sf::Event::Closed) {
         window.close();
     }
@@ -17,7 +20,7 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
         player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) > .02f &&
         player.getZoomFactor() - 0.02f * static_cast<float>(event.mouseWheel.delta) < 2) {
         player.setZoomFactor(0.02f * static_cast<float>(event.mouseWheel.delta));
-    }
+        }
 
     // Camera lock/unlock
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2)) {
@@ -25,18 +28,30 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3)) {
         player.setCameraLocked(false);
+
     }
 
-    // Handle object interactions
+
+    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::I) {
+        inventory.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
+    }
+
+    for (int i = 0; i < 9; ++i) {
+        if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(sf::Keyboard::Num1 + i))) {
+            inventory.updateHotbarSelection(i);// Zmień aktywny slot
+            break;
+        }
+    }
+        // Handle object interactions
     if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
         sf::Vector2i mousePos(event.mouseButton.x, event.mouseButton.y);
         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); // Convert to world coordinates
 
         // Check if any object was clicked and interact with it
         objectManager.handleObjectClick(worldPos, player.getPosition());
-    }
-}
+        }
 
+}
 sf::Vector2f InputHandler::getPlayerDirection() {
     sf::Vector2f direction(0, 0);
 

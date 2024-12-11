@@ -6,8 +6,12 @@
 #include "../headers/inputhandler.hpp"
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
+#include "../headers/inventory.hpp"
+#include "../headers/item.hpp"
+
 #include "../headers/worldgen.hpp"
 #include "../headers/ObjectManager.hpp"
+
 
 class Game {
 public:
@@ -16,6 +20,8 @@ public:
     void run();
     bool isVisibleInView(const sf::FloatRect& objectBounds, const sf::View& view);
 
+
+    Player getmPlayer() const { return mPlayer; }
 private:
     void processEvents();
     void update(float deltaTime);
@@ -23,14 +29,19 @@ private:
     void toggleFullscreen();
     void imgui(float deltaTime, Player& player); // ImGui
 
+    Inventory mInventory;
 
     sf::Music backgroundMusic;
 
+
     sf::RenderWindow mWindow = { sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Projekt pi 2024", sf::Style::Default};
+
     sf::Clock mClock;              // Needed for deltaTime
 
     InputHandler mInputHandler;
     Player mPlayer;
+
+
 
     WorldGen mWorldGen;
     ObjectManager objectManager;
@@ -43,6 +54,7 @@ private:
     float calculateBrightness(float inGameTime) const {
         // Normalize in-game time to [0, 1] (0 = midnight, 0.5 = noon, 1 = next midnight)
         float normalizedTime = inGameTime / inGameDayDuration;
+
 
         // Use a sine wave to simulate brightness: peaks at noon (normalizedTime = 0.5)
         float brightness = 0.1f + 0.5f * std::sin(2 * M_PI * (normalizedTime - 0.25f)) + 0.6f;// Shift by 6 hours for correct phase
