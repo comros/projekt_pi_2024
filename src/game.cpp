@@ -1,10 +1,14 @@
 #include "../headers/game.hpp"
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include <iostream>
 
-Game::Game()
-: mWorldGen(512, 512, std::random_device{}()),
+
+
+
+Game::Game() : mInventory(4, 9), mWorldGen(512, 512, std::random_device{}()),
 objectManager(mWorldGen)
+
 {
     mWindow.setFramerateLimit(144);
     mWindow.setKeyRepeatEnabled(false); // Disable key repeat for F11 fullscreen toggle
@@ -19,14 +23,23 @@ objectManager(mWorldGen)
     backgroundMusic.openFromFile(BACKGROUND_MUSIC);
     backgroundMusic.setLoop(true);
     backgroundMusic.play();
-    backgroundMusic.setVolume(0);
-
+    backgroundMusic.setVolume(10);
+    
+    Item pickaxe("Pickaxe", PICKAXE);
+    Item sword("Sword", SWORD);
+    Item iron_ore("Iron_ore", IRONORE, 10);
+    
+    mInventory.addItem(sword, 0, 2);
+    mInventory.addItem(pickaxe, 0, 1);
+    mInventory.addItem(iron_ore, 0, 0);
+  
     objectManager.loadTextures();
     objectManager.spawnObjects({512, 512}); // Spawn objects on valid tiles
 
     float playerClearanceRadius = 32.0f; // Minimum distance from objects
     sf::Vector2f playerSpawn = objectManager.findValidPlayerSpawn({512, 512}, playerClearanceRadius);
     mPlayer.setPosition(playerSpawn);
+
 }
 
 Game::~Game()
@@ -69,14 +82,15 @@ void Game::processEvents() {
     while (mWindow.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(mWindow, event);
 
-        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager);
+        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventory);
 
         // Handle the fullscreen toggle with F11
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
             toggleFullscreen();
         }
 
-        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager); // Pass ObjectManager
+
+
     }
 
     // Pause the music when window lost focus
@@ -87,6 +101,7 @@ void Game::processEvents() {
     if (event.type == sf::Event::GainedFocus) {
         backgroundMusic.play();
     }
+
 }
 
 
@@ -164,8 +179,14 @@ void Game::render(float deltaTime) {
     // Optional: Render player's collision box
     // mPlayer.renderBounds(mWindow);
 
+
     // ImGui rendering
+    ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
     imgui(deltaTime, mPlayer);
+    mInventory.drawInventory(mWindow);
+    mInventory.drawHotbarOnScreen(mWindow);
+    ImGui::SFML::Render(mWindow);
+
 
     // Display the rendered frame
     mWindow.display();
@@ -178,8 +199,6 @@ void Game::imgui(const float deltaTime, Player& player)
     static float effectsVolume = 100.0f;
     float musicVolume = backgroundMusic.getVolume() * 10;
     const float fps = 1.0f / deltaTime;
-    ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
-
     ImGui::Begin("Player");
 
     ImGui::Text("FPS: %.0f", fps);
@@ -202,8 +221,8 @@ void Game::imgui(const float deltaTime, Player& player)
         sf::Vector2f playerSpawn = objectManager.findValidPlayerSpawn({512,512}, playerClearanceRadius);
         player.setPosition(playerSpawn);
     }
-
     ImGui::End();
+
 
     ImGui::Begin("World Generation");
 
@@ -243,13 +262,13 @@ void Game::imgui(const float deltaTime, Player& player)
         player.setPosition(playerSpawn);
     }
 
+
     if (ImGui::Button("Regenerate Objects")) {
         objectManager.clearObjects(); // Clear existing objects
         objectManager.spawnObjects({512, 512}); // Spawn new objects
+
     }
 
     ImGui::End();
 
-    // Render ImGui content
-    ImGui::SFML::Render(mWindow);
 }

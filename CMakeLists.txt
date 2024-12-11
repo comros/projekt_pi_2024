@@ -58,6 +58,10 @@ add_executable(main src/main.cpp
         headers/gameobject.hpp
         headers/gameobject.hpp
         headers/ObjectManager.hpp
+        headers/inventory.hpp
+        src/inventory.cpp
+        headers/item.hpp
+
 
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio sfml-network sfml-window sfml-system sfml-main PUBLIC ImGui-SFML::ImGui-SFML)

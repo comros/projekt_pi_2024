@@ -76,6 +76,7 @@ void Player::updatePosition(const float deltaTime, const std::vector<std::shared
     std::random_device random;
     std::uniform_real_distribution<float> dist(0.5f, 1.25f);
 
+
     mSoundEffects.setPitch("Walk", mSpeed / 90.0f * dist(random)); // Set sound pitch based on speed
 
     // Normalize direction for velocity calculation
