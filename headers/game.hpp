@@ -4,6 +4,7 @@
 #include  <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "../headers/inputhandler.hpp"
+#include "../headers/pausemenu.hpp"
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
 #include "../headers/inventory.hpp"
@@ -31,6 +32,8 @@ private:
 
     Inventory mInventory;
 
+    PauseMenu mMenu;
+
     sf::Music backgroundMusic;
 
 
@@ -40,8 +43,6 @@ private:
 
     InputHandler mInputHandler;
     Player mPlayer;
-
-
 
     WorldGen mWorldGen;
     ObjectManager objectManager;

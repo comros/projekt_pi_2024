@@ -7,8 +7,7 @@
 
 
 Game::Game() : mInventory(4, 9), mWorldGen(512, 512, std::random_device{}()),
-objectManager(mWorldGen)
-
+objectManager(mWorldGen), mMenu(mPlayer, backgroundMusic)
 {
     mWindow.setFramerateLimit(144);
     mWindow.setKeyRepeatEnabled(false); // Disable key repeat for F11 fullscreen toggle
@@ -23,7 +22,7 @@ objectManager(mWorldGen)
     backgroundMusic.openFromFile(BACKGROUND_MUSIC);
     backgroundMusic.setLoop(true);
     backgroundMusic.play();
-    backgroundMusic.setVolume(10);
+    backgroundMusic.setVolume(0);
     
     Item pickaxe("Pickaxe", PICKAXE);
     Item sword("Sword", SWORD);
@@ -32,7 +31,14 @@ objectManager(mWorldGen)
     mInventory.addItem(sword, 0, 2);
     mInventory.addItem(pickaxe, 0, 1);
     mInventory.addItem(iron_ore, 0, 0);
-  
+
+    mMenu.setResumeCallback([&]() {
+        mMenu.toggle(); // Zamknij menu pauzy
+    });
+    mMenu.setExitCallback([&]() {
+        mWindow.close(); // Zamknij okno gry
+    });
+
     objectManager.loadTextures();
     objectManager.spawnObjects({512, 512}); // Spawn objects on valid tiles
 
@@ -82,15 +88,12 @@ void Game::processEvents() {
     while (mWindow.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(mWindow, event);
 
-        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventory);
+        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventory, mMenu);
 
         // Handle the fullscreen toggle with F11
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
             toggleFullscreen();
         }
-
-
-
     }
 
     // Pause the music when window lost focus
@@ -115,7 +118,7 @@ void Game::update(const float deltaTime)
     // Update in-game time
     mCurrentTime += (deltaTime / realDayDuration) * inGameDayDuration; // Advance in-game time
     if (mCurrentTime >= inGameDayDuration) {
-        mCurrentTime -= inGameDayDuration; // Reset to the next day
+            mCurrentTime -= inGameDayDuration; // Reset to the next day
     }
 
     // Calculate brightness based on time
@@ -185,6 +188,7 @@ void Game::render(float deltaTime) {
     imgui(deltaTime, mPlayer);
     mInventory.drawInventory(mWindow);
     mInventory.drawHotbarOnScreen(mWindow);
+    mMenu.render(mWindow);
     ImGui::SFML::Render(mWindow);
 
 
