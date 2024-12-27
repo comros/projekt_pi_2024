@@ -9,8 +9,8 @@
 #define PLAYER_PADDING_DOWN 11.0f
 #define PLAYER_PADDING_LEFT 5.0f
 
-#define WINDOW_WIDTH 1920.0f
-#define WINDOW_HEIGHT 1080.0f
+#define WINDOW_WIDTH 1368.0f
+#define WINDOW_HEIGHT 720.0f
 
 // Project build is in ./cmake-build-debug/bin, so in order to access the assets folder "../../" is needed
 #define PLAYER_WALK_ATLAS "../../assets/player/Walk/walk.png"
