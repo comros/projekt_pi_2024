@@ -11,9 +11,16 @@
 class ObjectManager {
 public:
     int amountOfObjects = 2500;
+    sf::Shader outlineShader;
 
     // Constructor accepting WorldGen reference
-    ObjectManager(WorldGen& worldGen) : mWorldGen(worldGen) {}
+    ObjectManager(WorldGen& worldGen) : mWorldGen(worldGen)
+    {
+        if (!outlineShader.loadFromFile("../../assets/shaders/outline.frag", sf::Shader::Fragment)) {
+            throw std::runtime_error("Failed to load outline shader");
+        }
+
+    }
 
     void loadTextures() {
         // Load textures for different object types
@@ -138,17 +145,69 @@ public:
             view.getSize()
         );
 
+        sf::Vector2f mouseWorldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
         for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
             if (auto rock = std::dynamic_pointer_cast<Rock>(*it)) {
                 sf::FloatRect rockBounds = rock->getSprite().getGlobalBounds();
                 if (viewBounds.intersects(rockBounds)) {
-                    window.draw(rock->getSprite());
+                    sf::Sprite sprite = rock->getSprite();
+
+                    if (rockBounds.contains(mouseWorldPos)) {
+                        // Set shader uniforms
+                        outlineShader.setUniform("texture", sf::Shader::CurrentTexture);
+                        outlineShader.setUniform("textureSize", sf::Glsl::Vec2(sprite.getTexture()->getSize()));
+                        outlineShader.setUniform("cornerColor", sf::Glsl::Vec4(0.0f, 0.0f, 0.0f, .25f)); // White
+                        outlineShader.setUniform("cornerSize", 2.0f); // Adjust for gap size
+                        outlineShader.setUniform("frameThickness", 1.0f); // Adjust for frame thickness
+
+                        // Render the rock with the shader
+                        window.draw(sprite, &outlineShader);
+                    } else {
+                        // Render the rock normally
+                        window.draw(sprite);
+                    }
                 }
             }
         }
     }
 
-    void renderBushes(sf::RenderWindow& window) {
+void renderBushes(sf::RenderWindow& window) {
+    // Get the view's visible bounds
+    sf::View view = window.getView();
+    sf::FloatRect viewBounds(
+        view.getCenter() - view.getSize() / 2.0f,
+        view.getSize()
+    );
+
+    sf::Vector2f mouseWorldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+    for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
+        if (auto bush = std::dynamic_pointer_cast<Bush>(*it)) {
+            sf::FloatRect bushBounds = bush->getSprite().getGlobalBounds();
+            if (viewBounds.intersects(bushBounds)) {
+                sf::Sprite sprite = bush->getSprite();
+
+                if (bushBounds.contains(mouseWorldPos)) {
+                    // Set shader uniforms
+                    outlineShader.setUniform("texture", sf::Shader::CurrentTexture);
+                    outlineShader.setUniform("textureSize", sf::Glsl::Vec2(sprite.getTexture()->getSize()));
+                    outlineShader.setUniform("cornerColor", sf::Glsl::Vec4(0.0f, 0.0f, 0.0f, .25f));
+                    outlineShader.setUniform("cornerSize", 2.0f); // Adjust for gap size
+                    outlineShader.setUniform("frameThickness", 1.0f); // Adjust for frame thickness
+
+                    // Render the bush with the shader
+                    window.draw(sprite, &outlineShader);
+                } else {
+                    // Render the bush normally
+                    window.draw(sprite);
+                }
+            }
+        }
+    }
+}
+
+    void renderTreesBehindThePlayer(sf::RenderWindow& window, const sf::Vector2f& playerPos) {
         // Get the view's visible bounds
         sf::View view = window.getView();
         sf::FloatRect viewBounds(
@@ -156,34 +215,81 @@ public:
             view.getSize()
         );
 
-        for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
-            if (auto bush = std::dynamic_pointer_cast<Bush>(*it)) {
-                sf::FloatRect bushBounds = bush->getSprite().getGlobalBounds();
-                if (viewBounds.intersects(bushBounds)) {
-                    window.draw(bush->getSprite());
-                }
-            }
-        }
-    }
-
-    void renderTrees(sf::RenderWindow& window) {
-        // Get the view's visible bounds
-        sf::View view = window.getView();
-        sf::FloatRect viewBounds(
-            view.getCenter() - view.getSize() / 2.0f,
-            view.getSize()
-        );
+        sf::Vector2f mouseWorldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
         for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
             if (auto tree = std::dynamic_pointer_cast<Tree>(*it)) {
                 sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
                 if (viewBounds.intersects(treeBounds)) {
-                    window.draw(tree->getSprite());
+                    sf::Sprite sprite = tree->getSprite();
+
+                    // Check if the mouse is over the tree for highlighting
+                    if (treeBounds.contains(mouseWorldPos)) {
+                        // Set shader uniforms
+                        outlineShader.setUniform("texture", sf::Shader::CurrentTexture);
+                        outlineShader.setUniform("textureSize", sf::Glsl::Vec2(sprite.getTexture()->getSize()));
+                        outlineShader.setUniform("cornerColor", sf::Glsl::Vec4(0.0f, 0.0f, 0.0f, 0.25f));
+                        outlineShader.setUniform("cornerSize", 2.0f); // Adjust for gap size
+                        outlineShader.setUniform("frameThickness", 1.0f); // Adjust for frame thickness
+
+                        // Render the tree with the shader
+                        window.draw(sprite, &outlineShader);
+                    } else {
+                        // Check if the tree is behind the player
+                        if (!tree->isInUpperHalfOfInteractionRange(playerPos)) {
+                            tree->adjustAlpha(1.0f); // Full opacity for trees behind the player
+
+                            // Render the tree normally
+                            window.draw(sprite);
+                        }
+                        else tree->adjustAlpha(0.5f);
+                    }
                 }
             }
         }
     }
 
+        void renderTreesOnTopOfPlayer(sf::RenderWindow& window, const sf::Vector2f& playerPos) {
+        // Get the view's visible bounds
+        sf::View view = window.getView();
+        sf::FloatRect viewBounds(
+            view.getCenter() - view.getSize() / 2.0f,
+            view.getSize()
+        );
+
+        sf::Vector2f mouseWorldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+        for (auto it = mObjects.rbegin(); it != mObjects.rend(); ++it) {
+            if (auto tree = std::dynamic_pointer_cast<Tree>(*it)) {
+                sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
+                if (viewBounds.intersects(treeBounds)) {
+                    sf::Sprite sprite = tree->getSprite();
+
+                    // Check if the mouse is over the tree for highlighting
+                    if (treeBounds.contains(mouseWorldPos) && tree->isInUpperHalfOfInteractionRange(playerPos)) {
+                        // Set shader uniforms
+                        outlineShader.setUniform("texture", sf::Shader::CurrentTexture);
+                        outlineShader.setUniform("textureSize", sf::Glsl::Vec2(sprite.getTexture()->getSize()));
+                        outlineShader.setUniform("cornerColor", sf::Glsl::Vec4(0.0f, 0.0f, 0.0f, 0.25f));
+                        outlineShader.setUniform("cornerSize", 2.0f); // Adjust for gap size
+                        outlineShader.setUniform("frameThickness", 1.0f); // Adjust for frame thickness
+
+                        // Render the tree with the shader
+                        window.draw(sprite, &outlineShader);
+                    } else {
+                        // Check if the tree is behind the player
+                        if (tree->isInUpperHalfOfInteractionRange(playerPos)) {
+                            tree->adjustAlpha(.5f); // Half opacity for trees behind the player
+
+                            // Render the tree normally
+                            window.draw(sprite);
+                        }
+                        else tree->adjustAlpha(1.0f);
+                    }
+                }
+            }
+        }
+    }
 
     void handleObjectClick(const sf::Vector2f& worldPos, const sf::Vector2f& playerPos) {
         // Iterate through all objects in the container

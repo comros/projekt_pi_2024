@@ -152,32 +152,12 @@ void Game::render(float deltaTime) {
     objectManager.renderRocks(mWindow);
     objectManager.renderBushes(mWindow);
 
-    // Render trees behind the player if visible
-    for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
-        Tree* tree = dynamic_cast<Tree*>(object.get());
-        if (tree) {
-            sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
-            if (isVisibleInView(treeBounds, view) && !tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->adjustAlpha(1.f);
-                mWindow.draw(tree->getSprite());
-            }
-        }
-    }
+    objectManager.renderTreesBehindThePlayer(mWindow, mPlayer.getPosition());
 
     // Render the player sprite
     mWindow.draw(mPlayer.getSprite());
 
-    // Render trees on top of the player if visible
-    for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
-        Tree* tree = dynamic_cast<Tree*>(object.get());
-        if (tree) {
-            sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
-            if (isVisibleInView(treeBounds, view) && tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->adjustAlpha(0.5f);
-                mWindow.draw(tree->getSprite());
-            }
-        }
-    }
+    objectManager.renderTreesOnTopOfPlayer(mWindow, mPlayer.getPosition());
 
     // Optional: Render player's collision box
     // mPlayer.renderBounds(mWindow);
