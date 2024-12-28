@@ -7,8 +7,8 @@
 #include "../headers/pausemenu.hpp"
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
-#include "../headers/inventory.hpp"
-#include "../headers/item.hpp"
+#include "InventoryManager.hpp"
+
 
 #include "../headers/worldgen.hpp"
 #include "../headers/ObjectManager.hpp"
@@ -30,12 +30,11 @@ private:
     void toggleFullscreen();
     void imgui(float deltaTime, Player& player); // ImGui
 
-    Inventory mInventory;
+    InventoryManager mInventoryManager;
 
     PauseMenu mMenu;
 
     sf::Music backgroundMusic;
-
 
     sf::RenderWindow mWindow = { sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Projekt pi 2024", sf::Style::Default};
 
@@ -55,8 +54,6 @@ private:
     float calculateBrightness(float inGameTime) const {
         // Normalize in-game time to [0, 1] (0 = midnight, 0.5 = noon, 1 = next midnight)
         float normalizedTime = inGameTime / inGameDayDuration;
-
-
         // Use a sine wave to simulate brightness: peaks at noon (normalizedTime = 0.5)
         float brightness = 0.1f + 0.5f * std::sin(2 * M_PI * (normalizedTime - 0.25f)) + 0.6f;// Shift by 6 hours for correct phase
         return std::clamp(brightness, 0.1f, 1.1f); // Clamp brightness to prevent extremes

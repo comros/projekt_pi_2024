@@ -6,6 +6,8 @@
 #include <iostream>
 #include <optional> // Dla dynamicznej obsługi ilości
 
+
+
 class Item {
 public:
     // Konstruktor dla przedmiotu z liczbą sztuk (stackable)
@@ -51,6 +53,7 @@ public:
     // Zwiększa liczbę sztuk
     void incrementCount(int amount = 1) {
         if (mStackable) {
+            //std::cout<<"Current count: "<<mCount.value()<<", Adding: "<<amount<<std::endl;
             mCount = mCount.value_or(0) + amount;
         }
     }

@@ -7,6 +7,7 @@
 #include <random>
 #include <unordered_map>
 #include <memory>
+#include <iostream>
 
 class ObjectManager {
 public:
@@ -14,11 +15,12 @@ public:
     sf::Shader outlineShader;
 
     // Constructor accepting WorldGen reference
-    ObjectManager(WorldGen& worldGen) : mWorldGen(worldGen)
-    {
+
+    ObjectManager(WorldGen& worldGen,InventoryManager& mInventoryManager) : mWorldGen(worldGen), mInventoryManager(mInventoryManager) {
+        mInventoryManager.addItem(mInventoryManager.sword);
         if (!outlineShader.loadFromFile("../../assets/shaders/outline.frag", sf::Shader::Fragment)) {
             throw std::runtime_error("Failed to load outline shader");
-        }
+
 
     }
 
@@ -313,14 +315,21 @@ void renderBushes(sf::RenderWindow& window) {
 
                     // If the object's health is 0 or less, remove it from the container
                     if (object.getHealth() <= 0) {
+                        if (dynamic_cast<Tree*>(&object)) {
+                            mInventoryManager.incrementItemCount(mInventoryManager.stick, 3);
+                        } else if (dynamic_cast<Rock*>(&object)) {
+                            mInventoryManager.incrementItemCount(mInventoryManager.stone, 2);
+                        } else if (dynamic_cast<Bush*>(&object)) {
+                            mInventoryManager.incrementItemCount(mInventoryManager.stick, 2);
+                        }
                         it = mObjects.erase(it);  // Erase the object from the container
+
                     } else {
                         ++it;  // Continue to the next object if it is still alive
                     }
                     return;  // Only handle one object per click
                 }
             }
-
             // Move to the next object if the player isn't in interaction range
             ++it;
         }
@@ -397,6 +406,7 @@ private:
     std::unordered_map<std::string, sf::Texture> mTextures;
     std::vector<std::shared_ptr<GameObject>> mObjects;
     WorldGen& mWorldGen; // Reference to WorldGen for tile information
+    InventoryManager& mInventoryManager;
 };
 
 #endif // OBJECT_MANAGER_HPP

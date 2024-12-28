@@ -10,11 +10,11 @@ class Inventory {
 public:
     Inventory(int rows, int columns);
 
-    void addItem(const Item& item, int row, int column); // Dodaj przedmiot do konkretnego slotu
-    void drawInventory(sf::RenderWindow& window);        // Rysuj ekwipunek
+    void addItem(const Item& item); // Dodaj przedmiot do konkretnego slotu
+    void drawInventory();        // Rysuj ekwipunek
     void toggleInventory() { mInventoryOpen = !mInventoryOpen; }
     bool getInventoryOpen() const { return mInventoryOpen; }
-    void drawHotbarOnScreen(sf::RenderWindow& window);
+    void drawHotbarOnScreen();
     void updateHotbarSelection(int);
 private:
     int mRows, mColumns;
