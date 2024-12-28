@@ -4,6 +4,7 @@
 #include  <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "../headers/inputhandler.hpp"
+#include "../headers/pausemenu.hpp"
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
 #include "InventoryManager.hpp"
@@ -30,6 +31,8 @@ private:
     void imgui(float deltaTime, Player& player); // ImGui
 
     InventoryManager mInventoryManager;
+
+    PauseMenu mMenu;
 
     sf::Music backgroundMusic;
 

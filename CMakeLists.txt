@@ -62,6 +62,8 @@ add_executable(main src/main.cpp
         src/inventory.cpp
         headers/item.hpp
         headers/InventoryManager.hpp
+        headers/pausemenu.hpp
+
 
 
 )

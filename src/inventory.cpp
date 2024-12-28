@@ -43,7 +43,9 @@ void Inventory::drawInventory() {
         int sourceCol;
     };
     if (!mInventoryOpen) return;
-
+    sf::Vector2u windowSize = window.getSize();
+    unsigned int windowWidth = windowSize.x; // Szerokość okna
+    unsigned int windowHeight = windowSize.y; // Wysokość okna
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.2f, 0.2f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
@@ -51,8 +53,8 @@ void Inventory::drawInventory() {
     float inventoryWidth = 875.0f;
     float inventoryHeight = 430.0f;
 
-    float inventoryX = (WINDOW_WIDTH - inventoryWidth) / 2.0f;
-    float inventoryY = (WINDOW_HEIGHT - inventoryHeight) / 2.0f;
+    float inventoryX = (windowWidth - inventoryWidth) / 2.0f;
+    float inventoryY = (windowHeight - inventoryHeight) / 2.0f;
 
     ImGui::SetNextWindowPos(ImVec2(inventoryX, inventoryY), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(inventoryWidth, inventoryHeight));
@@ -144,9 +146,11 @@ void Inventory::drawHotbarOnScreen() {
     const float spacing = 5.0f;
     float hotbarWidth = 870.0f; // Szerokość hotbara (dopasowana do ekwipunku)
     float hotbarHeight = 105.0f; // Wysokość hotbara (przykładowa)
-
-    float hotbarX = (WINDOW_WIDTH - hotbarWidth) / 2.0f;
-    float hotbarY = WINDOW_HEIGHT - hotbarHeight - 20.0f;
+    sf::Vector2u windowSize = window.getSize();
+    unsigned int windowWidth = windowSize.x; // Szerokość okna
+    unsigned int windowHeight = windowSize.y; // Wysokość okna
+    float hotbarX = (windowWidth - hotbarWidth) / 2.0f;
+    float hotbarY = windowHeight - hotbarHeight - 20.0f;
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
     ImGui::SetNextWindowPos(ImVec2(hotbarX, hotbarY), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(hotbarWidth, hotbarHeight));

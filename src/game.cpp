@@ -6,8 +6,10 @@
 
 
 
+
 Game::Game() :   mWorldGen(512, 512, std::random_device{}()),
-objectManager(mWorldGen, mInventoryManager), mInventoryManager()
+objectManager(mWorldGen, mInventoryManager), mInventoryManager(), mMenu(mPlayer, backgroundMusic)
+
 {
     mWindow.setFramerateLimit(144);
     mWindow.setKeyRepeatEnabled(false); // Disable key repeat for F11 fullscreen toggle
@@ -19,7 +21,25 @@ objectManager(mWorldGen, mInventoryManager), mInventoryManager()
     backgroundMusic.openFromFile(BACKGROUND_MUSIC);
     backgroundMusic.setLoop(true);
     backgroundMusic.play();
-    backgroundMusic.setVolume(10);
+
+    backgroundMusic.setVolume(0);
+    
+    Item pickaxe("Pickaxe", PICKAXE);
+    Item sword("Sword", SWORD);
+    Item iron_ore("Iron_ore", IRONORE, 10);
+    
+    mInventory.addItem(sword, 0, 2);
+    mInventory.addItem(pickaxe, 0, 1);
+    mInventory.addItem(iron_ore, 0, 0);
+
+    mMenu.setResumeCallback([&]() {
+        mMenu.toggle(); // Zamknij menu pauzy
+    });
+    mMenu.setExitCallback([&]() {
+        mWindow.close(); // Zamknij okno gry
+    });
+
+
     objectManager.loadTextures();
     objectManager.spawnObjects({512, 512}); // Spawn objects on valid tiles
 
@@ -71,15 +91,14 @@ void Game::processEvents() {
     while (mWindow.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(mWindow, event);
 
-        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventoryManager);
+
+        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventoryManager,  mMenu);
+
 
         // Handle the fullscreen toggle with F11
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
             toggleFullscreen();
         }
-
-
-
     }
 
     // Pause the music when window lost focus
@@ -104,7 +123,7 @@ void Game::update(const float deltaTime)
     // Update in-game time
     mCurrentTime += (deltaTime / realDayDuration) * inGameDayDuration; // Advance in-game time
     if (mCurrentTime >= inGameDayDuration) {
-        mCurrentTime -= inGameDayDuration; // Reset to the next day
+            mCurrentTime -= inGameDayDuration; // Reset to the next day
     }
 
     // Calculate brightness based on time
@@ -138,32 +157,12 @@ void Game::render(float deltaTime) {
     objectManager.renderRocks(mWindow);
     objectManager.renderBushes(mWindow);
 
-    // Render trees behind the player if visible
-    for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
-        Tree* tree = dynamic_cast<Tree*>(object.get());
-        if (tree) {
-            sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
-            if (isVisibleInView(treeBounds, view) && !tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->adjustAlpha(1.f);
-                mWindow.draw(tree->getSprite());
-            }
-        }
-    }
+    objectManager.renderTreesBehindThePlayer(mWindow, mPlayer.getPosition());
 
     // Render the player sprite
     mWindow.draw(mPlayer.getSprite());
 
-    // Render trees on top of the player if visible
-    for (const auto& object : objectManager.getObjects()) { // Use const reference to the shared_ptr
-        Tree* tree = dynamic_cast<Tree*>(object.get());
-        if (tree) {
-            sf::FloatRect treeBounds = tree->getSprite().getGlobalBounds();
-            if (isVisibleInView(treeBounds, view) && tree->isInUpperHalfOfInteractionRange(mPlayer.getPosition())) {
-                tree->adjustAlpha(0.5f);
-                mWindow.draw(tree->getSprite());
-            }
-        }
-    }
+    objectManager.renderTreesOnTopOfPlayer(mWindow, mPlayer.getPosition());
 
     // Optional: Render player's collision box
     // mPlayer.renderBounds(mWindow);
@@ -172,8 +171,11 @@ void Game::render(float deltaTime) {
     // ImGui rendering
     ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
     imgui(deltaTime, mPlayer);
+
     mInventoryManager.drawInventory();
     mInventoryManager.drawHotbarOnScreen();
+    mMenu.render(mWindow);
+
     ImGui::SFML::Render(mWindow);
 
 

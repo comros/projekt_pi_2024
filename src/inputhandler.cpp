@@ -5,13 +5,17 @@
 InputHandler::InputHandler() = default;
 
 
-void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, InventoryManager& InventoryManager) {
+
+void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, InventoryManager& InventoryManager,  PauseMenu& menu) {
+
     if (event.type == sf::Event::Closed) {
         window.close();
     }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        window.close();
+    
+    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+        if(menu.SettingsVisible()) menu.toggleSettings();
+        if(inventory.getInventoryOpen()) {inventory.toggleInventory(); return;}
+        menu.toggle();
     }
 
     // Camera zoom
@@ -33,7 +37,10 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
 
 
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::I) {
-        InventoryManager.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
+        if(menu.isVisible()) return;
+        if(menu.SettingsVisible()) return;
+        inventory.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
+
     }
 
     for (int i = 0; i < 9; ++i) {

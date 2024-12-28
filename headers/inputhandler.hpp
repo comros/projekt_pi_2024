@@ -8,6 +8,7 @@
 #include "InventoryManager.hpp"
 #include "../headers/tile.hpp"
 #include "ObjectManager.hpp"
+#include "pausemenu.hpp"
 
 
 class InputHandler {
@@ -16,8 +17,8 @@ public:
 
     // Call this in Game::processEvents to handle events
 
-    void handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, InventoryManager& InventoryManager);
 
+    void handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, InventoryManager& InventoryManager,  PauseMenu& menu);
 
     // Call this in Game::update to set player movement direction based on keyboard input
     static sf::Vector2f getPlayerDirection();
