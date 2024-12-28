@@ -5,7 +5,7 @@
 InputHandler::InputHandler() = default;
 
 
-void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, Inventory &inventory) {
+void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, InventoryManager& InventoryManager) {
     if (event.type == sf::Event::Closed) {
         window.close();
     }
@@ -33,12 +33,12 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
 
 
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::I) {
-        inventory.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
+        InventoryManager.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
     }
 
     for (int i = 0; i < 9; ++i) {
         if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(sf::Keyboard::Num1 + i))) {
-            inventory.updateHotbarSelection(i);// Zmień aktywny slot
+            InventoryManager.updateHotbarSelection(i);// Zmień aktywny slot
             break;
         }
     }

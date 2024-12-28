@@ -20,6 +20,8 @@
 #define SWORD "../../assets/items/sword.png"
 #define PICKAXE "../../assets/items/pickaxe.png"
 #define IRONORE "../../assets/items/iron_ore.png"
+#define STICK "../../assets/items/stick.png"
+#define STONE "../../assets/items/stone.png"
 
 #define TERRAIN_ATLAS "../../assets/terrain/test_tilemap.png"
 #define TERRAIN_ATLAS "../../assets/terrain/terrain.png"

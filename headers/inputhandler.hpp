@@ -5,6 +5,7 @@
 #include "player.hpp"
 
 #include "inventory.hpp"
+#include "InventoryManager.hpp"
 #include "../headers/tile.hpp"
 #include "ObjectManager.hpp"
 
@@ -15,7 +16,7 @@ public:
 
     // Call this in Game::processEvents to handle events
 
-    void handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, Inventory &inventory);
+    void handleEvent(const sf::Event& event, sf::RenderWindow& window, Player& player, ObjectManager& objectManager, InventoryManager& InventoryManager);
 
 
     // Call this in Game::update to set player movement direction based on keyboard input

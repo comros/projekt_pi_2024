@@ -6,35 +6,24 @@
 
 
 
-Game::Game() : mInventory(4, 9), mWorldGen(512, 512, std::random_device{}()),
-objectManager(mWorldGen)
-
+Game::Game() :   mWorldGen(512, 512, std::random_device{}()),
+objectManager(mWorldGen, mInventoryManager), mInventoryManager()
 {
     mWindow.setFramerateLimit(144);
     mWindow.setKeyRepeatEnabled(false); // Disable key repeat for F11 fullscreen toggle
-
     // Set the initial aspect ratio for the view
     mWindow.setView(sf::View(sf::FloatRect(0.f, 0.f, 16.f * 32.f, 16.f * 32.f))); // 16x16 tile size view
-
     // ImGui init, I cast it to void to get rid of the unused result warning
     (void)ImGui::SFML::Init(mWindow);
-
     // Load background music once
     backgroundMusic.openFromFile(BACKGROUND_MUSIC);
     backgroundMusic.setLoop(true);
     backgroundMusic.play();
     backgroundMusic.setVolume(10);
-    
-    Item pickaxe("Pickaxe", PICKAXE);
-    Item sword("Sword", SWORD);
-    Item iron_ore("Iron_ore", IRONORE, 10);
-    
-    mInventory.addItem(sword, 0, 2);
-    mInventory.addItem(pickaxe, 0, 1);
-    mInventory.addItem(iron_ore, 0, 0);
-  
     objectManager.loadTextures();
     objectManager.spawnObjects({512, 512}); // Spawn objects on valid tiles
+
+
 
     float playerClearanceRadius = 32.0f; // Minimum distance from objects
     sf::Vector2f playerSpawn = objectManager.findValidPlayerSpawn({512, 512}, playerClearanceRadius);
@@ -82,7 +71,7 @@ void Game::processEvents() {
     while (mWindow.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(mWindow, event);
 
-        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventory);
+        mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventoryManager);
 
         // Handle the fullscreen toggle with F11
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
@@ -183,8 +172,8 @@ void Game::render(float deltaTime) {
     // ImGui rendering
     ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
     imgui(deltaTime, mPlayer);
-    mInventory.drawInventory(mWindow);
-    mInventory.drawHotbarOnScreen(mWindow);
+    mInventoryManager.drawInventory();
+    mInventoryManager.drawHotbarOnScreen();
     ImGui::SFML::Render(mWindow);
 
 

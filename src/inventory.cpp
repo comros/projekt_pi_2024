@@ -1,21 +1,43 @@
 #include "../headers/inventory.hpp"
 
 #include <imgui_internal.h>
-
+#include <iostream>
 #include "imgui.h"
 #include "../cmake-build-debug/_deps/sfml-src/src/SFML/Window/Win32/CursorImpl.hpp"
 
 Inventory::Inventory(int rows, int columns)
-    : mRows(rows), mColumns(columns), mSlots(rows, std::vector<std::optional<Item>>(columns)) {}
+    : mRows(rows), mColumns(columns), mSlots(rows, std::vector<std::optional<Item>>(columns)) {std::cout<<std::endl<<"asdasdas"<<std::endl;}
 
-void Inventory::addItem(const Item& item, int row, int column) {
-    if (row >= 0 && row < mRows && column >= 0 && column < mColumns) {
-        mSlots[row][column] = item;
+void Inventory::addItem(const Item& newItem) {
+    // Jeśli przedmiot jest stackowalny, sprawdzamy, czy już znajduje się w ekwipunku
+    if (newItem.isStackable()) {
+        if(newItem.getCount() <= 0) return;
+        for (auto& row : mSlots) {
+            for (auto& slot : row) {
+                if (slot.has_value() && slot->getName() == newItem.getName()) {
+                    slot = newItem;
+                    return;
+                }
+            }
+        }
     }
+
+    // Jeśli przedmiot nie jest stackowalny lub nie znajduje się jeszcze w ekwipunku
+    // Szukamy pierwszego wolnego slotu
+    for (auto& row : mSlots) {
+        for (auto& slot : row) {
+            if (!slot.has_value()) {
+                slot = newItem; // Umieszczamy przedmiot w wolnym slocie
+                return;
+            }
+        }
+    }
+
+    // Jeśli ekwipunek jest pełny
+    std::cerr << "Inventory is full! Cannot add item: " << newItem.getName() << std::endl;
 }
 
-
-void Inventory::drawInventory(sf::RenderWindow& window) {
+void Inventory::drawInventory() {
     struct DragPayload {
         int sourceRow;
         int sourceCol;
@@ -111,14 +133,13 @@ for (int row = 0; row < mRows; ++row) {
         }
     }
 }
-
-
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleColor(3);
 }
 
-void Inventory::drawHotbarOnScreen(sf::RenderWindow& window) {
+void Inventory::drawHotbarOnScreen() {
+    if (mInventoryOpen) return;
     const float slotSize = 90.0f;
     const float spacing = 5.0f;
     float hotbarWidth = 870.0f; // Szerokość hotbara (dopasowana do ekwipunku)

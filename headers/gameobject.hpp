@@ -122,6 +122,7 @@ public:
         mHealth -= 20;
         if (mHealth <= 0) {
             std::cout << "Rock mined!" << std::endl;
+
         }
     }
 
