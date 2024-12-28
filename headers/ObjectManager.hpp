@@ -14,13 +14,14 @@ public:
     int amountOfObjects = 2500;
     sf::Shader outlineShader;
 
+
     // Constructor accepting WorldGen reference
 
     ObjectManager(WorldGen& worldGen,InventoryManager& mInventoryManager) : mWorldGen(worldGen), mInventoryManager(mInventoryManager) {
         mInventoryManager.addItem(mInventoryManager.sword);
         if (!outlineShader.loadFromFile("../../assets/shaders/outline.frag", sf::Shader::Fragment)) {
             throw std::runtime_error("Failed to load outline shader");
-
+        }
 
     }
 

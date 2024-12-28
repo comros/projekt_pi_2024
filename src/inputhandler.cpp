@@ -14,7 +14,7 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
         if(menu.SettingsVisible()) menu.toggleSettings();
-        if(inventory.getInventoryOpen()) {inventory.toggleInventory(); return;}
+        if(InventoryManager.getInventoryOpen()) {InventoryManager.toggleInventory(); return;}
         menu.toggle();
     }
 
@@ -39,7 +39,7 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::I) {
         if(menu.isVisible()) return;
         if(menu.SettingsVisible()) return;
-        inventory.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
+        InventoryManager.toggleInventory(); // Wciśnięcie "I" otwiera/zamyka ekwipunek
 
     }
 

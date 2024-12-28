@@ -37,7 +37,7 @@ void Inventory::addItem(const Item& newItem) {
     std::cerr << "Inventory is full! Cannot add item: " << newItem.getName() << std::endl;
 }
 
-void Inventory::drawInventory() {
+void Inventory::drawInventory(sf::RenderWindow& window) {
     struct DragPayload {
         int sourceRow;
         int sourceCol;
@@ -140,7 +140,7 @@ for (int row = 0; row < mRows; ++row) {
     ImGui::PopStyleColor(3);
 }
 
-void Inventory::drawHotbarOnScreen() {
+void Inventory::drawHotbarOnScreen(sf::RenderWindow& window) {
     if (mInventoryOpen) return;
     const float slotSize = 90.0f;
     const float spacing = 5.0f;

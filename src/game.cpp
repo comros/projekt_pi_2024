@@ -8,7 +8,7 @@
 
 
 Game::Game() :   mWorldGen(512, 512, std::random_device{}()),
-objectManager(mWorldGen, mInventoryManager), mInventoryManager(), mMenu(mPlayer, backgroundMusic)
+objectManager(mWorldGen, mInventoryManager), mMenu(mPlayer, backgroundMusic), mInventoryManager(mWindow)
 
 {
     mWindow.setFramerateLimit(144);
@@ -24,13 +24,7 @@ objectManager(mWorldGen, mInventoryManager), mInventoryManager(), mMenu(mPlayer,
 
     backgroundMusic.setVolume(0);
     
-    Item pickaxe("Pickaxe", PICKAXE);
-    Item sword("Sword", SWORD);
-    Item iron_ore("Iron_ore", IRONORE, 10);
-    
-    mInventory.addItem(sword, 0, 2);
-    mInventory.addItem(pickaxe, 0, 1);
-    mInventory.addItem(iron_ore, 0, 0);
+
 
     mMenu.setResumeCallback([&]() {
         mMenu.toggle(); // Zamknij menu pauzy

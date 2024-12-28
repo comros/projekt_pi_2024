@@ -8,8 +8,6 @@
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
 #include "InventoryManager.hpp"
-
-
 #include "../headers/worldgen.hpp"
 #include "../headers/ObjectManager.hpp"
 
