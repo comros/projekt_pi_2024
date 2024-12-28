@@ -14,16 +14,20 @@ public:
 
     // Renderowanie menu pauzy
     void render(sf::RenderWindow& window) {
+        sf::Vector2u windowSize = window.getSize();
+        unsigned int windowWidth = windowSize.x; // Szerokość okna
+        unsigned int windowHeight = windowSize.y; // Wysokość okna
         if (mIsVisible) {
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.2f, 0.2f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.1f, 0.1f,1.0f));
-            float windowWidth = 200.0f;
-            float windowHeight = 200.0f;
 
-            float menuX = (WINDOW_WIDTH - windowWidth) / 2.0f;
-            float menuY = (WINDOW_HEIGHT - windowHeight) / 2.0f;
+            float menuWidth = 200.0f;
+            float menuHeight = 200.0f;
+
+            float menuX = (windowWidth - menuWidth) / 2.0f;
+            float menuY = (windowHeight - menuHeight) / 2.0f;
 
             float buttonWidth = 100.0f;
             float buttonHeight = 50.0f;
@@ -31,14 +35,14 @@ public:
 
             // Oblicz pozycję Y pierwszego przycisku, aby wszystkie były wyśrodkowane
             float totalButtonHeight = 3 * buttonHeight + 2 * spacing; // Wysokość 3 przycisków i odstępy
-            float startY = (windowHeight - totalButtonHeight) / 2.0f;
+            float startY = (menuHeight - totalButtonHeight) / 2.0f;
 
             ImGui::SetNextWindowPos(ImVec2(menuX, menuY), ImGuiCond_Always);
-            ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight));
+            ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight));
             ImGui::Begin("Menu", &mIsVisible, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
 
             // Pozycja X jest taka sama dla wszystkich przycisków (środek okna)
-            float centerX = (windowWidth - buttonWidth) / 2.0f;
+            float centerX = (menuWidth - buttonWidth) / 2.0f;
 
             // Ustaw pozycję pierwszego przycisku
             ImGui::SetCursorPos(ImVec2(centerX, startY));
@@ -63,13 +67,13 @@ public:
             ImGui::PopStyleColor(3);
         }
         if (mSettingsVisible) {
-            float windowWidth = 350.0f;
-            float windowHeight = 200.0f;
+            float menuWidth = 350.0f;
+            float menuHeight = 200.0f;
 
-            float menuX = (WINDOW_WIDTH - windowWidth) / 2.0f;
-            float menuY = (WINDOW_HEIGHT - windowHeight) / 2.0f;
+            float menuX = (windowWidth - menuWidth) / 2.0f;
+            float menuY = (windowHeight - menuHeight) / 2.0f;
             ImGui::SetNextWindowPos(ImVec2(menuX, menuY), ImGuiCond_Always);
-            ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight));
+            ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight));
             ImGui::Begin("Settings", &mSettingsVisible,  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
             static float effectsVolume = 100.0f;
             float musicVolume = mMusic.getVolume() * 10;

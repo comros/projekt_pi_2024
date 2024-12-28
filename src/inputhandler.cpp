@@ -9,11 +9,10 @@ void InputHandler::handleEvent(const sf::Event& event, sf::RenderWindow& window,
     if (event.type == sf::Event::Closed) {
         window.close();
     }
-
-
+    
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
         if(menu.SettingsVisible()) menu.toggleSettings();
-        if(inventory.getInventoryOpen()) inventory.toggleInventory();
+        if(inventory.getInventoryOpen()) {inventory.toggleInventory(); return;}
         menu.toggle();
     }
 
