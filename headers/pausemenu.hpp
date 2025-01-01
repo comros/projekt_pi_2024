@@ -1,4 +1,4 @@
-#ifndef PAUSEMENU_HPP
+   #ifndef PAUSEMENU_HPP
 #define PAUSEMENU_HPP
 
 #include <imgui.h>
