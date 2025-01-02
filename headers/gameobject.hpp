@@ -82,7 +82,7 @@ public:
         : GameObject(position, texture, 100) {}
 
     void interact() override {
-        mHealth -= 10;
+        mHealth -= 40;
         if (mHealth <= 0) {
             std::cout << "Tree destroyed!" << std::endl;
         }
@@ -116,10 +116,10 @@ public:
 class Rock : public GameObject {
 public:
     Rock(const sf::Vector2f& position, const sf::Texture& texture)
-        : GameObject(position, texture, 200) {}
+        : GameObject(position, texture, 100) {}
 
     void interact() override {
-        mHealth -= 20;
+        mHealth -= 30;
         if (mHealth <= 0) {
             std::cout << "Rock mined!" << std::endl;
 
@@ -142,10 +142,10 @@ public:
 class Bush : public GameObject {
 public:
     Bush(const sf::Vector2f& position, const sf::Texture& texture)
-        : GameObject(position, texture, 150) {}
+        : GameObject(position, texture, 100) {}
 
     void interact() override {
-        mHealth -= 20;
+        mHealth -= 50;
         if (mHealth <= 0) {
             std::cout << "Bush destroyed!" << std::endl;
         }
