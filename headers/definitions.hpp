@@ -19,6 +19,7 @@
 
 #define SWORD "../../assets/items/sword.png"
 #define PICKAXE "../../assets/items/pickaxe.png"
+#define AXE "../../assets/items/axe.png"
 #define IRONORE "../../assets/items/iron_ore.png"
 #define STICK "../../assets/items/stick.png"
 #define STONE "../../assets/items/stone.png"

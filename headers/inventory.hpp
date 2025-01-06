@@ -16,6 +16,12 @@ public:
     bool getInventoryOpen() const { return mInventoryOpen; }
     void drawHotbarOnScreen(sf::RenderWindow& window);
     void updateHotbarSelection(int);
+    std::optional<Item> getSelectedHotbarItem() const {
+        if (mSelectedHotbarSlot >= 0 && mSelectedHotbarSlot < static_cast<int>(mSlots[0].size())) {
+            return mSlots[3][mSelectedHotbarSlot];
+        }
+        return std::nullopt; // Jeśli slot jest poza zakresem, zwracamy brak przedmiotu
+    }
 private:
     int mRows, mColumns;
     bool mInventoryOpen = false;
