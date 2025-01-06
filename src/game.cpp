@@ -134,7 +134,17 @@ bool Game::isVisibleInView(const sf::FloatRect& objectBounds, const sf::View& vi
     return viewBounds.intersects(objectBounds);
 }
 
+sf::Color adjustColorIntensity(const sf::Color& originalColor, float multiplier) {
+    return sf::Color(
+        std::min(static_cast<int>(originalColor.r * multiplier), 255),
+        std::min(static_cast<int>(originalColor.g * multiplier), 255),
+        std::min(static_cast<int>(originalColor.b * multiplier), 255)
+    );
+}
+
 void Game::render(float deltaTime) {
+
+  
     if(!mStartMenu.isStarted())
     {
         ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
@@ -142,8 +152,15 @@ void Game::render(float deltaTime) {
         ImGui::SFML::Render(mWindow);
     }
     else {
-        // Clear and render the window contents
-        mWindow.clear(sf::Color(0, 0, 0, 255));
+
+      
+    // Calculate brightness based on time
+    float brightness = calculateBrightness(mCurrentTime);
+
+    // Clear and render the window contents
+    mWindow.clear(adjustColorIntensity(sf::Color(33, 115, 184), brightness));
+
+      
 
         // Get the current camera view
         sf::View view = mWindow.getView();

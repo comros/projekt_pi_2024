@@ -81,6 +81,7 @@ public:
     Tree(const sf::Vector2f& position, const sf::Texture& texture)
         : GameObject(position, texture, 150) {}
 
+
     void interact(int dmg) override {
         mHealth -= dmg;
         if (mHealth <= 0) {
@@ -116,7 +117,8 @@ public:
 class Rock : public GameObject {
 public:
     Rock(const sf::Vector2f& position, const sf::Texture& texture)
-        : GameObject(position, texture, 200) {}
+        : GameObject(position, texture, 100) {}
+
 
     void interact(int dmg) override {
         mHealth -= dmg;
@@ -143,6 +145,7 @@ class Bush : public GameObject {
 public:
     Bush(const sf::Vector2f& position, const sf::Texture& texture)
         : GameObject(position, texture, 100) {}
+
 
     void interact(int dmg) override {
         mHealth -= dmg;
