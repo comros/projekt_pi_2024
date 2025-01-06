@@ -79,7 +79,7 @@ private:
     sf::Vector2f mVelocity;
     sf::View mView;
     float mSpeed = 100.0f;
-    float mZoomFactor = 0.225f;
+    float mZoomFactor = 0.09f;
     bool mIsCameraLocked = true;
     sf::Vector2f fixedCameraPosition = {0, 0};
 

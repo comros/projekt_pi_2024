@@ -18,7 +18,8 @@ public:
     // Constructor accepting WorldGen reference
 
     ObjectManager(WorldGen& worldGen,InventoryManager& mInventoryManager) : mWorldGen(worldGen), mInventoryManager(mInventoryManager) {
-        mInventoryManager.addItem(mInventoryManager.sword);
+        mInventoryManager.addItem(mInventoryManager.pickaxe);
+        mInventoryManager.addItem(mInventoryManager.axe);
         if (!outlineShader.loadFromFile("../../assets/shaders/outline.frag", sf::Shader::Fragment)) {
             throw std::runtime_error("Failed to load outline shader");
         }
@@ -282,7 +283,7 @@ void renderBushes(sf::RenderWindow& window) {
                     } else {
                         // Check if the tree is behind the player
                         if (tree->isInUpperHalfOfInteractionRange(playerPos)) {
-                            tree->adjustAlpha(.5f); // Half opacity for trees behind the player
+                           tree->adjustAlpha(.5f); // Half opacity for trees behind the player
 
                             // Render the tree normally
                             window.draw(sprite);
@@ -294,47 +295,7 @@ void renderBushes(sf::RenderWindow& window) {
         }
     }
 
-    void handleObjectClick(const sf::Vector2f& worldPos, const sf::Vector2f& playerPos) {
-        // Iterate through all objects in the container
-        for (auto it = mObjects.begin(); it != mObjects.end(); ) {
-
-            // Skip nullptr objects (objects that have been removed)
-            if (it->get() == nullptr) {
-                it = mObjects.erase(it);  // Remove invalid (nullptr) shared pointers
-                continue;  // Skip to the next iteration
-            }
-
-            // Dereference the shared pointer to access the actual object
-            GameObject& object = *it->get();
-
-            // Check if the player is within the interaction range of the object
-            if (object.getInteractionRange().contains(playerPos)) {
-                // If player is in the interaction range, check if the click position is also inside the range
-                if (object.getCollisionBox().contains(worldPos)) {
-                    // Interact with the object (damage or other effects)
-                    object.interact();
-
-                    // If the object's health is 0 or less, remove it from the container
-                    if (object.getHealth() <= 0) {
-                        if (dynamic_cast<Tree*>(&object)) {
-                            mInventoryManager.incrementItemCount(mInventoryManager.stick, 3);
-                        } else if (dynamic_cast<Rock*>(&object)) {
-                            mInventoryManager.incrementItemCount(mInventoryManager.stone, 2);
-                        } else if (dynamic_cast<Bush*>(&object)) {
-                            mInventoryManager.incrementItemCount(mInventoryManager.stick, 2);
-                        }
-                        it = mObjects.erase(it);  // Erase the object from the container
-
-                    } else {
-                        ++it;  // Continue to the next object if it is still alive
-                    }
-                    return;  // Only handle one object per click
-                }
-            }
-            // Move to the next object if the player isn't in interaction range
-            ++it;
-        }
-    }
+    void handleObjectClick(const sf::Vector2f& worldPos, const sf::Vector2f& playerPos);
 
     const std::vector<std::shared_ptr<GameObject>>& getObjects() const {
         return mObjects;
@@ -410,4 +371,57 @@ private:
     InventoryManager& mInventoryManager;
 };
 
+inline void ObjectManager::handleObjectClick(const sf::Vector2f &worldPos, const sf::Vector2f &playerPos) {
+    // Iterate through all objects in the container
+    for (auto it = mObjects.begin(); it != mObjects.end(); ) {
+
+        // Skip nullptr objects (objects that have been removed)
+        if (it->get() == nullptr) {
+            it = mObjects.erase(it);  // Remove invalid (nullptr) shared pointers
+            continue;  // Skip to the next iteration
+        }
+
+        // Dereference the shared pointer to access the actual object
+        GameObject& object = *it->get();
+
+        // Check if the player is within the interaction range of the object
+        if (object.getInteractionRange().contains(playerPos)) {
+            // If player is in the interaction range, check if the click position is also inside the range
+            if (object.getCollisionBox().contains(worldPos)) {
+                // Interact with the object (damage or other effects)
+                std::optional<Item> selectedItem = mInventoryManager.getSelectedHotbarItem();
+                if(selectedItem) {
+                    if (dynamic_cast<Tree*>(&object)) {
+                        if (selectedItem->getName() == "axe") {object.interact(75);}
+                        else object.interact(25);
+                    } else if (dynamic_cast<Rock*>(&object)) {
+                        if (selectedItem->getName() == "pickaxe") {object.interact(75);}
+                        else object.interact(25);
+                    } else if (dynamic_cast<Bush*>(&object)) {
+                        if (selectedItem->getName() == "axe") {object.interact(75);}
+                        else object.interact(25);
+                    }
+                }
+                else object.interact(25);
+                // If the object's health is 0 or less, remove it from the container
+                if (object.getHealth() <= 0) {
+                    if (dynamic_cast<Tree*>(&object)) {
+                        mInventoryManager.incrementItemCount(mInventoryManager.stick, 3);
+                    } else if (dynamic_cast<Rock*>(&object)) {
+                        mInventoryManager.incrementItemCount(mInventoryManager.stone, 2);
+                    } else if (dynamic_cast<Bush*>(&object)) {
+                        mInventoryManager.incrementItemCount(mInventoryManager.stick, 2);
+                    }
+                    it = mObjects.erase(it);  // Erase the object from the container
+
+                } else {
+                    ++it;  // Continue to the next object if it is still alive
+                }
+                return;  // Only handle one object per click
+            }
+        }
+        // Move to the next object if the player isn't in interaction range
+        ++it;
+    }
+}
 #endif // OBJECT_MANAGER_HPP

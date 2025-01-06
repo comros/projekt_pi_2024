@@ -14,7 +14,7 @@ public:
     }
 
     virtual ~GameObject() = default;
-    virtual void interact() = 0; // Pure virtual function
+    virtual void interact(int dmg) = 0; // Pure virtual function
 
     int getHealth() const { return mHealth; }
     const sf::Sprite& getSprite() const { return mSprite; }
@@ -79,10 +79,10 @@ protected:
 class Tree : public GameObject {
 public:
     Tree(const sf::Vector2f& position, const sf::Texture& texture)
-        : GameObject(position, texture, 100) {}
+        : GameObject(position, texture, 150) {}
 
-    void interact() override {
-        mHealth -= 10;
+    void interact(int dmg) override {
+        mHealth -= dmg;
         if (mHealth <= 0) {
             std::cout << "Tree destroyed!" << std::endl;
         }
@@ -118,8 +118,8 @@ public:
     Rock(const sf::Vector2f& position, const sf::Texture& texture)
         : GameObject(position, texture, 200) {}
 
-    void interact() override {
-        mHealth -= 20;
+    void interact(int dmg) override {
+        mHealth -= dmg;
         if (mHealth <= 0) {
             std::cout << "Rock mined!" << std::endl;
 
@@ -142,10 +142,10 @@ public:
 class Bush : public GameObject {
 public:
     Bush(const sf::Vector2f& position, const sf::Texture& texture)
-        : GameObject(position, texture, 150) {}
+        : GameObject(position, texture, 100) {}
 
-    void interact() override {
-        mHealth -= 20;
+    void interact(int dmg) override {
+        mHealth -= dmg;
         if (mHealth <= 0) {
             std::cout << "Bush destroyed!" << std::endl;
         }

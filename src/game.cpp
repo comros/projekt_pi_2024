@@ -7,9 +7,7 @@
 
 
 
-Game::Game() :   mWorldGen(512, 512, std::random_device{}()),
-objectManager(mWorldGen, mInventoryManager), mMenu(mPlayer, backgroundMusic), mInventoryManager(mWindow)
-
+Game::Game() :   mWorldGen(512, 512, std::random_device{}()), objectManager(mWorldGen, mInventoryManager), mMenu(mPlayer, backgroundMusic), mInventoryManager(mWindow), mStartMenu(mPlayer, backgroundMusic, mWorldGen, objectManager)
 {
     mWindow.setFramerateLimit(144);
     mWindow.setKeyRepeatEnabled(false); // Disable key repeat for F11 fullscreen toggle
@@ -23,7 +21,7 @@ objectManager(mWorldGen, mInventoryManager), mMenu(mPlayer, backgroundMusic), mI
     backgroundMusic.play();
 
     backgroundMusic.setVolume(0);
-    
+
 
 
     mMenu.setResumeCallback([&]() {
@@ -57,7 +55,6 @@ void Game::run()
     {
         // Calculating deltaTime for fps independency
         const float deltaTime = mClock.restart().asSeconds();
-
         processEvents();
         update(deltaTime);
         render(deltaTime);
@@ -138,39 +135,47 @@ bool Game::isVisibleInView(const sf::FloatRect& objectBounds, const sf::View& vi
 }
 
 void Game::render(float deltaTime) {
-    // Clear and render the window contents
-    mWindow.clear(sf::Color(0, 0, 0, 255));
+    if(!mStartMenu.isStarted())
+    {
+        ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
+        mStartMenu.render(mWindow);
+        ImGui::SFML::Render(mWindow);
+    }
+    else {
+        // Clear and render the window contents
+        mWindow.clear(sf::Color(0, 0, 0, 255));
 
-    // Get the current camera view
-    sf::View view = mWindow.getView();
-
-    // Render world tiles
-    mWorldGen.render(mWindow);
-
-    // Render visible rocks and bushes
-    objectManager.renderRocks(mWindow);
-    objectManager.renderBushes(mWindow);
-
-    objectManager.renderTreesBehindThePlayer(mWindow, mPlayer.getPosition());
-
-    // Render the player sprite
-    mWindow.draw(mPlayer.getSprite());
-
-    objectManager.renderTreesOnTopOfPlayer(mWindow, mPlayer.getPosition());
-
-    // Optional: Render player's collision box
-    // mPlayer.renderBounds(mWindow);
+        // Get the current camera view
+        sf::View view = mWindow.getView();
 
 
-    // ImGui rendering
-    ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
-    imgui(deltaTime, mPlayer);
+        // Render world tiles
+        mWorldGen.render(mWindow);
 
-    mInventoryManager.drawInventory();
-    mInventoryManager.drawHotbarOnScreen();
-    mMenu.render(mWindow);
+        // Render visible rocks and bushes
+        objectManager.renderRocks(mWindow);
+        objectManager.renderBushes(mWindow);
 
-    ImGui::SFML::Render(mWindow);
+        objectManager.renderTreesBehindThePlayer(mWindow, mPlayer.getPosition());
+
+        // Render the player sprite
+        mWindow.draw(mPlayer.getSprite());
+
+        objectManager.renderTreesOnTopOfPlayer(mWindow, mPlayer.getPosition());
+
+        // Optional: Render player's collision box
+        // mPlayer.renderBounds(mWindow);
+
+        // ImGui rendering
+        ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
+
+        imgui(deltaTime, mPlayer);
+
+        mInventoryManager.drawInventory();
+        mInventoryManager.drawHotbarOnScreen();
+        mMenu.render(mWindow);
+        ImGui::SFML::Render(mWindow);
+    }
 
 
     // Display the rendered frame

@@ -8,6 +8,7 @@
 #include "../headers/player.hpp"
 #include "../headers/definitions.hpp"
 #include "InventoryManager.hpp"
+#include "startmenu.hpp"
 #include "../headers/worldgen.hpp"
 #include "../headers/ObjectManager.hpp"
 
@@ -31,6 +32,8 @@ private:
     InventoryManager mInventoryManager;
 
     PauseMenu mMenu;
+
+    StartMenu mStartMenu;
 
     sf::Music backgroundMusic;
 

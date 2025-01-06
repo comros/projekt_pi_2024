@@ -6,7 +6,7 @@
 #include "../cmake-build-debug/_deps/sfml-src/src/SFML/Window/Win32/CursorImpl.hpp"
 
 Inventory::Inventory(int rows, int columns)
-    : mRows(rows), mColumns(columns), mSlots(rows, std::vector<std::optional<Item>>(columns)) {std::cout<<std::endl<<"asdasdas"<<std::endl;}
+    : mRows(rows), mColumns(columns), mSlots(rows, std::vector<std::optional<Item>>(columns)) {}
 
 void Inventory::addItem(const Item& newItem) {
     // Jeśli przedmiot jest stackowalny, sprawdzamy, czy już znajduje się w ekwipunku
@@ -47,9 +47,6 @@ void Inventory::drawInventory(sf::RenderWindow& window) {
     unsigned int windowWidth = windowSize.x; // Szerokość okna
     unsigned int windowHeight = windowSize.y; // Wysokość okna
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.2f, 0.2f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
     float inventoryWidth = 875.0f;
     float inventoryHeight = 430.0f;
 
@@ -137,7 +134,6 @@ for (int row = 0; row < mRows; ++row) {
 }
     ImGui::End();
     ImGui::PopStyleVar();
-    ImGui::PopStyleColor(3);
 }
 
 void Inventory::drawHotbarOnScreen(sf::RenderWindow& window) {
@@ -154,8 +150,6 @@ void Inventory::drawHotbarOnScreen(sf::RenderWindow& window) {
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
     ImGui::SetNextWindowPos(ImVec2(hotbarX, hotbarY), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(hotbarWidth, hotbarHeight));
-
-
 
     ImGui::Begin("Hotbar", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 
@@ -204,5 +198,7 @@ void Inventory::drawHotbarOnScreen(sf::RenderWindow& window) {
 void Inventory::updateHotbarSelection(int i) {
             mSelectedHotbarSlot = i; // Zmień aktywny slot
 }
+
+
 
 

@@ -6,7 +6,7 @@
 
 class InventoryManager {
 public:
-    InventoryManager(sf::RenderWindow& Window) : mInventory(4,9), iron_ore("iron_ore",IRONORE, 0), stone("stone",STONE, 0), stick("stick",STICK, 0), pickaxe("pickup",PICKAXE), sword("sword",SWORD), mWindow(Window) {
+    InventoryManager(sf::RenderWindow& Window) : mInventory(4,9), iron_ore("iron_ore",IRONORE, 0), stone("stone",STONE, 0), stick("stick",STICK, 0), pickaxe("pickaxe",PICKAXE), sword("sword",SWORD),axe("axe",AXE), mWindow(Window) {
     }
 
     void drawInventory() {
@@ -31,8 +31,12 @@ public:
     bool getInventoryOpen() {
         return mInventory.getInventoryOpen();
     }
+    std::optional<Item> getSelectedHotbarItem() {
+        return mInventory.getSelectedHotbarItem();
+    }
     Item iron_ore;
     Item pickaxe;
+    Item axe;
     Item sword;
     Item stone;
     Item stick;
