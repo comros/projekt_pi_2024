@@ -3,10 +3,6 @@
 #include "imgui-SFML.h"
 #include <iostream>
 
-
-
-
-
 Game::Game() :   mWorldGen(512, 512, std::random_device{}()), objectManager(mWorldGen, mInventoryManager), mMenu(mPlayer, backgroundMusic), mInventoryManager(mWindow), mStartMenu(mPlayer, backgroundMusic, mWorldGen, objectManager)
 {
     mWindow.setFramerateLimit(144);
@@ -22,8 +18,6 @@ Game::Game() :   mWorldGen(512, 512, std::random_device{}()), objectManager(mWor
 
     backgroundMusic.setVolume(0);
 
-
-
     mMenu.setResumeCallback([&]() {
         mMenu.toggle(); // Zamknij menu pauzy
     });
@@ -31,6 +25,10 @@ Game::Game() :   mWorldGen(512, 512, std::random_device{}()), objectManager(mWor
         mWindow.close(); // Zamknij okno gry
     });
 
+    if (!mShallShader.loadFromFile("../../assets/shaders/shallow.frag", sf::Shader::Fragment)) {
+        std::cerr << "Failed to load shader!" << std::endl;
+    }
+    mShallShader.setUniform("texture", sf::Shader::CurrentTexture);
 
     objectManager.loadTextures();
     objectManager.spawnObjects({512, 512}); // Spawn objects on valid tiles
@@ -82,9 +80,7 @@ void Game::processEvents() {
     while (mWindow.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(mWindow, event);
 
-
         mInputHandler.handleEvent(event, mWindow, mPlayer, objectManager, mInventoryManager,  mMenu);
-
 
         // Handle the fullscreen toggle with F11
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F11) {
@@ -175,8 +171,20 @@ void Game::render(float deltaTime) {
 
         objectManager.renderTreesBehindThePlayer(mWindow, mPlayer.getPosition());
 
-        // Render the player sprite
-        mWindow.draw(mPlayer.getSprite());
+    // Render the player sprite
+
+        if (mWorldGen.getTile(mPlayer.getPosition().x / 16, mPlayer.getPosition().y / 16).getType() == Tile::TileType::DeepWater)
+        {
+            float splitY = 0; // Define the split point
+            sf::Vector2f offset(0, -32); // Offset for the bottom half
+            mShallShader.setUniform("splitY", splitY);
+            mShallShader.setUniform("offset", offset);
+            mWindow.draw(mPlayer.getSprite(), &mShallShader);
+        }
+        else
+        {
+            mWindow.draw(mPlayer.getSprite());
+        }
 
         objectManager.renderTreesOnTopOfPlayer(mWindow, mPlayer.getPosition());
 

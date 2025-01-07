@@ -40,15 +40,6 @@ public:
         }
     }
 
-    // Get the position of a tile at specific coordinates (x, y)
-    sf::Vector2f getTilePosition(int x, int y) const {
-        if (x >= 0 && x < static_cast<int>(mWidth) && y >= 0 && y < static_cast<int>(mHeight)) {
-            return mTiles[y][x].getPosition();
-        } else {
-            throw std::out_of_range("Coordinates out of map bounds");
-        }
-    }
-
     // Main map generation method
     void generateMap();
     int calculateBitmask(int x, int y, Tile::TileType type) const;

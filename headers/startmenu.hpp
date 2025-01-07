@@ -27,7 +27,7 @@ class StartMenu {
             // Oblicz pozycję Y pierwszego przycisku, aby wszystkie były wyśrodkowane
             float totalButtonHeight = 3 * buttonHeight + 2 * spacing; // Wysokość 3 przycisków i odstępy
             float startY = (windowHeight - totalButtonHeight) / 2.0f;
-            ImGui::SetNextWindowSize(ImVec2(0, 0));
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
             ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight));
             ImGui::Begin("MenuStart",0 , ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
             float centerX = (windowWidth - buttonWidth) / 2.0f;

@@ -11,6 +11,7 @@
 #include "startmenu.hpp"
 #include "../headers/worldgen.hpp"
 #include "../headers/ObjectManager.hpp"
+#include <SFML/Graphics/Shader.hpp>
 
 
 class Game {
@@ -28,6 +29,8 @@ private:
     void render(float deltaTime);
     void toggleFullscreen();
     void imgui(float deltaTime, Player& player); // ImGui
+
+    sf::Shader mShallShader;
 
     InventoryManager mInventoryManager;
 
